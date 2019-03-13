@@ -8,9 +8,11 @@ Database Schema
     + username
     + password
     + points
+    + attempts
     
 + current round 
     + target id
+    + 
     
 + targets 
     + url
