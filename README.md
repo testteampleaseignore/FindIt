@@ -3,11 +3,16 @@ Where we store our code!
 Database Schema
 
 + users
+    + id 
     + email
     + username
     + password
     + points
-+ rounds
-    + target_url
-    + target_lat
-    + target_long
+    
++ current round 
+    + target id
+    
++ targets 
+    + url
+    + lat
+    + long
