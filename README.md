@@ -1,8 +1,8 @@
 Where we store our code!
 
-## Database Schema
+### Database Schema
 
-#### users
+#### players
 + id 
 + email
 + username
