@@ -11,6 +11,7 @@ Where we store our code!
 + attempts
     
 #### rounds
++ starter_id (player)
 + target_url
 + target_lat
 + target_long
