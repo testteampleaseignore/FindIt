@@ -1,20 +1,21 @@
 Where we store our code!
 
-Database Schema
+## Database Schema
 
-+ users
-    + id 
-    + email
-    + username
-    + password
-    + points
-    + attempts
+#### users
++ id 
++ email
++ username
++ password
++ points
++ attempts
     
-+ rounds
-    + target id
-    + 
-    
-+ targets 
-    + url
-    + lat
-    + long
+#### rounds
++ target_url
++ target_lat
++ target_long
++ first_place
++ second_place
++ third_place
++ fourth_place
++ fifth_place
