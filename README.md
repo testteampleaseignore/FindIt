@@ -9,14 +9,25 @@ Where we store our code!
 + password
 + points
 + attempts
-    
+
+#### targets
++ url
++ lat
++ long
+
+#### reports_offensive
++ target_id
++ player_id
++ date
+  
 #### rounds
++ started_date
++ ended_date
++ target_id
 + starter_id (player)
-+ target_url
-+ target_lat
-+ target_long
 + first_place
 + second_place
 + third_place
 + fourth_place
 + fifth_place
+
