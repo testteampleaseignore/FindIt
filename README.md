@@ -10,7 +10,7 @@ Database Schema
     + points
     + attempts
     
-+ current round 
++ rounds
     + target id
     + 
     
