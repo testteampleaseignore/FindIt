@@ -1,9 +1,0 @@
-
-DROP TABLE registration_info;
-CREATE TABLE IF NOT EXISTS findit_db(
-  id SERIAL PRIMARY KEY,       /* Unique identifier for each player (it's possible multiple players have the same name/similiar information) */
-  user_name VARCHAR(50) NOT NULL,   /* The player's username */
-  password VARCHAR(50),             /* Player's password */
-  email VARCHAR(100)                /*Player's email*/
-);
-
