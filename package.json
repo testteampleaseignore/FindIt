@@ -1,5 +1,5 @@
 {
-    "name": "node-ejs",
+    "name": "FindIt!",
     "main": "server.js",
     "dependencies": {
         "ejs": "^2.5.5",
