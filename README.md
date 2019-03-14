@@ -2,7 +2,7 @@ Where we store our code!
 
 ### Database Schema
 
-#### players
+#### users
 + id 
 + email
 + username
