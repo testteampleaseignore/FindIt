@@ -2,7 +2,7 @@ Where we store our code!
 
 ### Proposed Tasks Remaining 
 
-+ [ ] Home page (blank)
++ [x] Home page (blank)
 + [ ] Login Page
 + [ ] Register Page
 + [ ] Upload Target Page

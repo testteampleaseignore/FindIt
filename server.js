@@ -1,51 +1,42 @@
+/***********************
+  Load Components!
 
-// Express - A Node.js Framework
-var express = require('express');
+  Express      - A Node.js Framework
+  Body-Parser  - A tool to help use parse the data in a post request
+  Pg-Promise   - A database tool to help use connect to our PostgreSQL database
+***********************/
+var express = require('express'); //Ensure our express framework has been added
+var app = express();
+var bodyParser = require('body-parser'); //Ensure our body-parser tool has been added
+app.use(bodyParser.json());              // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-// Body-Parser - A tool to help use parse the data in a post request
-var bodyParser = require('body-parser');
-
-// Pg-Promise - A database tool to help use connect to our PostgreSQL database
+//Create Database Connection
 var pgp = require('pg-promise')();
 
-// filesystem
-var fs = require('fs');
- 
-var app = express();
 
-// Support json encoded & url encoded bodies
-app.use(bodyParser.json());              
-app.use(bodyParser.urlencoded({ extended: true }));
+const dbConfig = {
+	host: 'localhost',
+	port: 5432,
+	database: 'findit_db',
+	user: 'postgres',
+	password: 'pwd'
+};
 
-// Read database configuration in from file
-var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-var db = pgp(config);
+var db = pgp(dbConfig);
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/'));//This line is necessary for us to use relative paths and access our resources directory
 
- //This line is necessary for us to use relative paths and access our resources directory
-app.use(express.static(__dirname + '/'));
-
-
-// login page 
-app.get('/', function(req, res) {
-	//res.render('pages/login', {
-	//	local_css: "signin.css", 
-	//	my_title: "Login Page"
-	//});
+app.get('/',function(req,res)
+{
+	res.render('pages/home', {
+		my_title: "Home Page"
+	});
 });
 
-// registration page 
-app.get('/register', function(req, res) {
-	// res.render('pages/register',{
-	// 	my_title:"Registration Page"
-	//});
-});
 
-app.get('/upload-target', function(req, res) {
-	
-});
 
 app.listen(3000);
 console.log('3000 is the magic port');
