@@ -2,7 +2,7 @@ Where we store our code!
 
 ### Database Schema
 
-#### user
+#### players
 + id 
 + email
 + username
@@ -16,17 +16,17 @@ Where we store our code!
 + long
   
 #### rounds
-+ time_started
++ started_date
++ ended_date
 + target_id
-+ starter_id (user fk)
++ starter_id (users fk)
 
 #### round_placements
-+ place_number
-+ user_id
-+ round_id
++ place number
++ user id
++ round id
 
 #### reports_offensive
 + target_id
 + player_id
 + date
-
