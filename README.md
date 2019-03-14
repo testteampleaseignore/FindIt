@@ -2,16 +2,16 @@ Where we store our code!
 
 ### Proposed Tasks Remaining 
 
-+ [] Home page (blank)
-+ [] Login Page
-+ [] Register Page
-+ [] Upload Target Page
-+ [] "I'm here!" Button
-+ [] Score update / placing logic
-+ [] Current Round Display (on Home page)
-+ [] Player stats Profile
-+ [] Transition to new round logic
-+ [] Reporting a picture
++ [ ] Home page (blank)
++ [ ] Login Page
++ [ ] Register Page
++ [ ] Upload Target Page
++ [ ] "I'm here!" Button
++ [ ] Score update / placing logic
++ [ ] Current Round Display (on Home page)
++ [ ] Player stats Profile
++ [ ] Transition to new round logic
++ [ ] Reporting a picture
 
 ### Proposed Database Schema
 
