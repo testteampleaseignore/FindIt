@@ -22,7 +22,7 @@ Where we store our code!
 + points
 + attempts
 
-#### targets
+#### rounds
 + target_url
 + target_lat
 + target_long
