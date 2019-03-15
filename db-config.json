@@ -1,7 +1,7 @@
 {
 	"host": "localhost",
 	"port": 5432,
-	"database": "football_db",
+	"database": "findit_db",
 	"user": "postgres",
 	"password": "password"
 }
