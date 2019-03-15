@@ -83,10 +83,10 @@ app.post('/register', function(req, res)
 {
 	var body = req.body;
 	// console.log(body);
-	var insert_username = 'INSERT INTO users (user_name, email, password) ' +
+	var insert_user = 'INSERT INTO users (user_name, email, password) ' +
 	                      `VALUES ('${body.username}', '${body.email}', '${body.password}'); `;
 	// console.log(insert_username);
-	db.any(insert_username)
+	db.any(insert_user)
 	.then(function(result) {
 		console.log(result); 
 	      	// Log the successfully registered user in; NOT working yet
