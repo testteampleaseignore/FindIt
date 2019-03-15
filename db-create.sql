@@ -5,11 +5,12 @@ DROP TABLE IF EXISTS rounds;
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,       /* Unique identifier for each player (it's possible multiple 
                                   players have the same name/similiar information) */
-  user_name VARCHAR(50) NOT NULL,   /* The player's username */
+  user_name VARCHAR(50) UNIQUE NOT NULL,   /* The player's username */
   password VARCHAR(50),             /* Player's password */
   email VARCHAR(100),                /* Player's email */
   points INTEGER,
-  attempts INTEGER
+  attempts INTEGER,
+  CONSTRAINT uq_user_info UNIQUE (user_name, email)
 );
 
 CREATE TABLE IF NOT EXISTS rounds (
