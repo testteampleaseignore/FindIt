@@ -62,7 +62,13 @@ app.get('/register', function(req, res)
 
 app.post('/register', function(req, res)
 {
-	//var insert_username = 'INSERT'
+	var body = req.body;
+	var insert_username = 'INSERT INTO users (username, email, password) ' +
+	                      `VALUES (${body.username}, ${body.email}, ${body.password}); `
+	db.any(insert_username)
+	.then(function(result) {
+		console.log(result);
+	})
 })
 
 

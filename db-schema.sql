@@ -20,6 +20,6 @@ CREATE TABLE IF NOT EXISTS rounds (
     target_url VARCHAR(510), /* The URL which points to the "target" image (the place users 
                                 must try to find this round) */
     target_latitude DECIMAL, /* Target's latitude */
-    target_longitude DECIMAL, /* Target's longitude */
+    target_longitude DECIMAL /* Target's longitude */
 );
 
