@@ -56,7 +56,7 @@ app.get('/',function(req,res)
 
 app.get('/login', function(req, res)
 {
-	//TODO
+	//TODO: make a nice page
 	// Should present the user with a /login form
 	res.render('pages/login', {
 		my_title: 'Login'
@@ -82,8 +82,10 @@ app.get('/register', function(req, res)
 app.post('/register', function(req, res)
 {
 	var body = req.body;
-	var insert_username = 'INSERT INTO users (username, email, password) ' +
-	                      `VALUES (${body.username}, ${body.email}, ${body.password}); `
+	// console.log(body);
+	var insert_username = 'INSERT INTO users (user_name, email, password) ' +
+	                      `VALUES ('${body.username}', '${body.email}', '${body.password}'); `;
+	// console.log(insert_username);
 	db.any(insert_username)
 	.then(function(result) {
 		console.log(result); 
