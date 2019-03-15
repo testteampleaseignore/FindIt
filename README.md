@@ -1,4 +1,8 @@
-Where we store our code!
+Where we store the code for FindIt!
+
+### How to Use
+
+You can execute `npm run watch` at the terminal, from this project directory, to automatically update the server when changes are made. 
 
 ### Proposed Tasks Remaining 
 
