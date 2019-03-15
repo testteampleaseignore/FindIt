@@ -15,7 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 var pgp = require('pg-promise')();
 var session = require('express-session');
 
-
+// TODO: read this from db-config.json
+// e.g. something like: var dbConfig = JSON.parse(fs.readFileSync('file', 'utf8'));
 const dbConfig = {
 	host: 'localhost',
 	port: 5432,
@@ -64,11 +65,11 @@ app.post('/login', function(req, res)
 {
 	//TODO
 	// Validate the user's submitted login form by
-	// (1) Checking if the hash of their submitted password 
+	// (1) Checking if the hash of the submitted password 
 	//   matches the one we have stored in our database,
 	// (2) On success, redirect to the homepage
-	// (3) On failure, return the login page and display
-	//   an error message explaining what happened
+	// (3) On failure, return the user to the login page and display
+	//   a new error message explaining what happened
 });
 
 app.get('/register', function(req, res)
