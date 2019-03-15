@@ -42,8 +42,13 @@ app.get('/',function(req,res)
    // Check if the user is logged in or not
 	if (req.session.userID) 
 	{
-		res.render('pages/home', {
-			my_title: "Home Page"
+		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
+		  .then(function(result) {
+		  	console.log(`User logged in: ${result.user_name}`);
+		  	res.render('pages/home', {
+				my_title: "Home Page",
+				username: result.user_name
+			});
 		});
 	}
 	else 
