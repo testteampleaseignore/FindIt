@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //Create Database Connection
 var pgp = require('pg-promise')();
+var session = require('express-session');
 
 
 const dbConfig = {
@@ -29,12 +30,40 @@ var db = pgp(dbConfig);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/'));//This line is necessary for us to use relative paths and access our resources directory
 
+app.use(session({
+	'secret': 'whisper'
+}
+));
+
 app.get('/',function(req,res)
 {
-	res.render('pages/home', {
-		my_title: "Home Page"
-	});
+	if (req.session.userID) 
+	{
+		res.render('pages/home', {
+			my_title: "Home Page"
+		});
+	}
+	else
+	{
+		res.redirect('/login');
+	}
+	
 });
+
+app.get('/login', function(req, res)
+{
+	//TODO
+})
+
+app.get('/register', function(req, res)
+{
+	res.render('pages/registrationPage');
+})
+
+app.post('/register', function(req, res)
+{
+	//var insert_username = 'INSERT'
+})
 
 
 
