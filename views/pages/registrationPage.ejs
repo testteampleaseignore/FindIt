@@ -18,6 +18,9 @@
 	</head>
 
 <body>
+	<% if(error) { %>
+		<div class="alert alert-danger"><p><%= error %></p></div>
+	<% } %>
 	<h1> Registration Page</h1>
 	<form action="/register" method="post">
 	  Username<br>

@@ -81,7 +81,9 @@ app.post('/login', function(req, res)
 
 app.get('/register', function(req, res)
 {
-	res.render('pages/registrationPage');
+	res.render('pages/registrationPage', {
+		error: req.query.error
+	});
 });
 
 app.post('/register', function(req, res)
@@ -89,16 +91,26 @@ app.post('/register', function(req, res)
 	var body = req.body;
 	// console.log(body);
 	var insert_user = 'INSERT INTO users (user_name, email, password) ' +
-	                      `VALUES ('${body.username}', '${body.email}', '${body.password}'); `;
+	                      `VALUES ('${body.username}', '${body.email}', '${body.password}') ` +
+	                      'RETURNING id;' 
 	// console.log(insert_username);
-	db.any(insert_user)
-	.then(function(result) {
-		console.log(result); 
-	      	// Log the successfully registered user in; NOT working yet
-	      	// req.session.userID = result[0].id;
-		// If everything looks good, send the logged in user to the home page
-		// res.redirect('/');
-	});
+	db.oneOrNone(insert_user)
+	  .then(function(result) {
+	  	if(result) { 
+      	  // Log the successfully registered user in; NOT working yet
+      	  req.session.userID = result.id;
+		  // If everything looks good, send the now-logged-in user to the home page
+		  res.redirect('/');
+	  	}
+	  })
+	  .catch((result) => {
+	    console.log(result.message);
+	    if(result.message.startsWith('duplicate')) {
+	    	var message = 'User already exists! Try again.';
+	    	var urlEncodedMessage = encodeURIComponent(message);
+	    	res.redirect(`/register?error=${urlEncodedMessage}`);
+	    }
+	  })
 });
 
 
