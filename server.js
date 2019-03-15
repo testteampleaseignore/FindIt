@@ -58,6 +58,9 @@ app.get('/login', function(req, res)
 {
 	//TODO
 	// Should present the user with a /login form
+	res.render('pages/login', {
+		my_title: 'Login'
+	});
 });
 
 app.post('/login', function(req, res)
