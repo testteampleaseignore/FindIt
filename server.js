@@ -63,7 +63,7 @@ app.get('/login', function(req, res)
 {
 	//TODO: make a nice page
 	// Should present the user with a /login form
-	res.render('pages/login', {
+	res.render('pages/login_form', {
 		my_title: 'Login'
 	});
 });
