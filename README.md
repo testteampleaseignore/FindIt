@@ -7,7 +7,7 @@ Where we store the code for FindIt!
 - Enter a Postgres terminal and make a database called "findit_db". 
 - Enter the database with "\c findit_db".
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- If your postgres user's password is not "password", change [db-config.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-config.json) to reflect what it actually is (or change your password, whichever you want).
+- If your postgres user's password is not "pwd", change https://github.com/testteampleaseignore/FindIt/blob/master/server.js#L24 to reflect what it actually is (or change your password, whichever you want).
 
 #### NodeJS stuff
 
