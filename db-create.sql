@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,       /* Unique identifier for each player (it's possible multiple 
                                   players have the same name/similiar information) */
   user_name VARCHAR(50) UNIQUE NOT NULL,   /* The player's username */
-  password VARCHAR(50),             /* Player's password */
+  password_hash VARCHAR(510),             /* Hashed version of player's password */
   email VARCHAR(100),                /* Player's email */
   points INTEGER,
   attempts INTEGER,
