@@ -29,14 +29,13 @@ var db = pgp(dbConfig);
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/'));//This line is necessary for us to use relative paths and access our resources directory
+app.use(express.static(__dirname + '/')); //This line is necessary for us to use relative paths and access our resources directory
 
 // Create a session and initialize
 // a not-so-secret secret key
 app.use(session({
 	'secret': 'whisper'
-}
-));
+}));
 
 app.get('/',function(req,res)
 {
@@ -48,10 +47,10 @@ app.get('/',function(req,res)
 		});
 	}
 	else 
-  {
-      // If not, make them login
+    {
+        // If not, make them login
 		res.redirect('/login');
-	}
+    }
 	
 });
 
