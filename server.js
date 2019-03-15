@@ -30,6 +30,8 @@ var db = pgp(dbConfig);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/'));//This line is necessary for us to use relative paths and access our resources directory
 
+// Create a session and initialize
+// a not-so-secret secret key
 app.use(session({
 	'secret': 'whisper'
 }
@@ -37,14 +39,16 @@ app.use(session({
 
 app.get('/',function(req,res)
 {
+   // Check if the user is logged in or not
 	if (req.session.userID) 
 	{
 		res.render('pages/home', {
 			my_title: "Home Page"
 		});
 	}
-	else
-	{
+	else 
+  {
+      // If not, make them login
 		res.redirect('/login');
 	}
 	
@@ -67,9 +71,12 @@ app.post('/register', function(req, res)
 	                      `VALUES (${body.username}, ${body.email}, ${body.password}); `
 	db.any(insert_username)
 	.then(function(result) {
-		console.log(result);
-	})
-})
+		console.log(result); 
+      // Log the successfully registered user in
+      // NOT working yet
+      // req.session.userID = result[0].id;
+	});
+});
 
 
 
