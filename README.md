@@ -4,10 +4,11 @@ Where we store the code for FindIt!
 
 #### PostgreSQL stuff
 
-- Enter a Postgres terminal and make a database called "findit_db". 
-- Enter the database with "\c findit_db".
+- Enter a Postgres terminal and, if you don't already have a database, make one called "findit". If your named yours differently, that's OK. 
+- Enter the database with "\c findit" (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- If your postgres user's password is not "pwd", change https://github.com/testteampleaseignore/FindIt/blob/master/server.js#L24 to reflect what it actually is (or change your password, whichever you want).
+- Copy db-config.json.example to db-config.json, e.g. `db-config.json{.example,}`.
+- Modify your new db-config.json file to match your PostgreSQL credentials: password, user, etc.
 
 #### NodeJS stuff
 
@@ -17,9 +18,10 @@ Where we store the code for FindIt!
 ### Proposed Tasks Remaining 
 
 + [x] Home page (blank)
-+ [ ] Login Page
-+ [ ] Register Page
-+ [ ] Upload Target Page
++ [x] Login Page
++ [x] Register Page
++ [x] Upload Target Page
++ [ ] Uploaded target persists
 + [ ] "I'm here!" Button
 + [ ] Score update / placing logic
 + [ ] Current Round Display (on Home page)
