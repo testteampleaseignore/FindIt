@@ -140,6 +140,9 @@ app.post('/register', function(req, res)
 	  })
 });
 
+app.get('/upload', function(req, res) {
+	res.render('pages/upload');
+});
 
 
 app.listen(3000);
