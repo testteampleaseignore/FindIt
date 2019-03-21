@@ -15,17 +15,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 var pgp = require('pg-promise')();
 var session = require('express-session');
 var bcrypt = require('bcrypt');
+var fs = require('fs');
 
-// TODO: read this from db-config.json
-// e.g. something like: var dbConfig = JSON.parse(fs.readFileSync('file', 'utf8'));
-const dbConfig = {
-	host: 'localhost',
-	port: 5432,
-	database: 'findit_db',
-	user: 'postgres',
-	password: 'pwd'
-};
-
+// get db & its configuration
+var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
 var db = pgp(dbConfig);
 
 // set the view engine to ejs
@@ -137,6 +130,7 @@ app.post('/register', function(req, res)
 	  	}
 	  })
 	  .catch((result) => {
+	  	console.log(result);
 	    console.log(result.message);
 	    if(result.message.startsWith('duplicate')) {
 	    	var message = 'User already exists! Try again.';
