@@ -39,6 +39,7 @@ Where we store the code for FindIt!
 + attempts
 
 #### rounds
++ id
 + target_url
 + target_lat
 + target_long
@@ -47,6 +48,25 @@ Where we store the code for FindIt!
 
 #### round_placements
 + place number
-+ user id
-+ round id
++ user_id
++ round_id
 
+An example usage of this database design would be:
+
+    SELECT COUNT(*) as times_placed_first FROM users 
+    JOIN round_placements ON users.id=round_placements.user_id 
+    WHERE placement_number=1 AND user_name='nick';`
+
+If the round_placements table looked like this...
+
+     placement_number | user_id | round_id 
+    ------------------+---------+----------
+                    1 |       2 |        1
+                    1 |       1 |        2
+                    1 |       2 |        3
+
+.. and "nick" was the 2nd user, the result would be:
+
+    times_placed_first 
+    --------------------
+                  2
