@@ -21,9 +21,10 @@ Where we store the code for FindIt!
 + [x] Login Page
 + [x] Register Page
 + [x] Upload Target Page
-+ [ ] Uploaded target persists
-+ [ ] "I'm here!" Button
-+ [ ] Score update / placing logic
++ [ ] Selecting a Target location
++ [ ] Target / Location persistence
++ [ ] Checking a target location
++ [ ] Make round placement-to-score logic
 + [ ] Current Round Display (on Home page)
 + [ ] Player stats Profile
 + [ ] Transition to new round logic
@@ -33,6 +34,7 @@ Where we store the code for FindIt!
 
 #### users
 + id 
++ user_name
 + email
 + password
 + points
