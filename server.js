@@ -43,10 +43,8 @@ var PLACEMENTS_TO_POINTS = {
 
 app.get('/',function(req,res)
 {
+	// Logged out Home page
 	res.render('pages/home');
-   // Check if the user is logged in or not
-	
-	
 });
 
 app.get('/login', function(req, res)
