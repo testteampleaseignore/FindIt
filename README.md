@@ -72,3 +72,9 @@ If the round_placements table looked like this...
     times_placed_first 
     --------------------
                   2
+		  
+To get some testing data right away to start hacking,
+run `psql -U <username> <dbname> < testing-db.sql`,
+taking care to replace username and dbname appropriately.
+
+
