@@ -31,6 +31,16 @@ app.use(session({
 	'secret': 'whisper'
 }));
 
+// One way we could handle score upload logic
+var PLACEMENTS_TO_POINTS = {
+	1: 10,
+	2: 5,
+	3: 3,
+	4: 2,
+	5: 1	
+}
+
+
 app.get('/',function(req,res)
 {
 	res.render('pages/home');
