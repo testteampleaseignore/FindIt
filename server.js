@@ -33,23 +33,9 @@ app.use(session({
 
 app.get('/',function(req,res)
 {
+	res.render('pages/home');
    // Check if the user is logged in or not
-	if (req.session.userID) 
-	{
-		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
-		  .then(function(result) {
-		  	console.log(`User logged in: ${result.user_name}`);
-		  	res.render('pages/home', {
-				my_title: "Home Page",
-				username: result.user_name
-			});
-		});
-	}
-	else 
-    {
-        // If not, make them login
-		res.redirect('/login');
-    }
+	
 	
 });
 
@@ -78,7 +64,7 @@ app.post('/login', function(req, res)
 				if(bcrypt.compareSync(body.password, result.password_hash)) {
 				 // Passwords match
 				 req.session.userID = result.id;
-				 res.redirect('/'); 
+				 res.redirect('/playerProfilePage'); 
 				} else {
 				 // (3) On different failures, return the user to the 
 				 // login page and display a new error message explaining 
@@ -101,7 +87,7 @@ app.post('/login', function(req, res)
 app.get('/logout', function(req, res)
 {
 	req.session.userID = null;
-	res.redirect('/login');
+	res.redirect('/');
 });
 
 app.get('/register', function(req, res)
@@ -140,10 +126,37 @@ app.post('/register', function(req, res)
 	  })
 });
 
+
+
 app.get('/upload', function(req, res) {
 	res.render('pages/upload');
 });
 
+app.get('/playerProfilePage', function(req, res) {
+	res.render('pages/playerProfilePage');
+	// Check if the user is logged in or not
+	if (req.session.userID) 
+	{
+		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
+		  .then(function(result) {
+		  	console.log(`User logged in: ${result.user_name}`);
+		  	res.render('pages/home', {
+				my_title: "Home Page",
+				username: result.user_name
+			});
+		});
+	}
+	else 
+    {
+        // If not, make them login
+		res.redirect('/login');
+    }
+
+
+});
+
+
 
 app.listen(3000);
 console.log('3000 is the magic port');
+
