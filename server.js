@@ -44,7 +44,9 @@ var PLACEMENTS_TO_POINTS = {
 app.get('/',function(req,res)
 {
 	// Logged out Home page
-	res.render('pages/home');
+	res.render('pages/home', {
+		my_title: 'Find It!'
+	});
 });
 
 app.get('/login', function(req, res)
