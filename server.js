@@ -43,10 +43,14 @@ var PLACEMENTS_TO_POINTS = {
 
 app.get('/',function(req,res)
 {
-	res.render('pages/home');
-   // Check if the user is logged in or not
-	
-	
+	var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
+
+	db.one(target_stmt)
+	  .then(function(round){
+		res.render('pages/home', {
+			target_url: round.target_url
+		});	
+	});
 });
 
 app.get('/login', function(req, res)
@@ -74,7 +78,7 @@ app.post('/login', function(req, res)
 				if(bcrypt.compareSync(body.password, result.password_hash)) {
 				 // Passwords match
 				 req.session.userID = result.id;
-				 res.redirect('/playerProfilePage'); 
+				 res.redirect('/current_round'); 
 				} else {
 				 // (3) On different failures, return the user to the 
 				 // login page and display a new error message explaining 
@@ -142,19 +146,30 @@ app.get('/upload', function(req, res) {
 	res.render('pages/upload');
 });
 
-app.get('/playerProfilePage', function(req, res) {
-	res.render('pages/playerProfilePage');
+app.get('/current_round', function(req, res) {
+	
+	var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
+
+	
 	// Check if the user is logged in or not
 	if (req.session.userID) 
 	{
-		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
-		  .then(function(result) {
-		  	console.log(`User logged in: ${result.user_name}`);
-		  	res.render('pages/home', {
-				my_title: "Home Page",
-				username: result.user_name
-			});
-		});
+		var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
+		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
+		db.task('get-everything', task => {
+        	return task.batch([
+	            task.one(target_url),
+	            task.any(user_name)
+	        ]);
+    	})
+    	.then(item => {
+	      
+	      res.render('pages/current_round',{
+	      	my_title: "Current Round",
+	        image: item[0],
+	        name: item[1]
+	      })
+    	});
 	}
 	else 
     {

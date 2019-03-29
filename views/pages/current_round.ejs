@@ -21,55 +21,30 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
     <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
     <a href="home2.ejs" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
     <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Leaderboard</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Log out</a>
+    <a href="/logout" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Log out</a>
   </div>
 </div>
 
 
 <style>
 	body {
-  		background-color: tomato;
+  		background-color: white;
 	}
-	table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
+  .image-container {
+    text-align: center;
 
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-tr:nth-child(odd) {
-  background-color: #ffffff;
-}
+  }
 </style>
 
 <body>
+<br><br>
+<h2 style="text-align: center;">Current Round</h2>
+<div class="image-container">
+  <img src='uploads/<%=image.target_url%>'>
+</div>
 
-<h2>Player Profile</h2>
 
-<table>
-  <tr>
-    <th>Name</th>
-    <td> </td>
-    
-  </tr>
-  <tr>
-    <th>Score</th>
-    <td></td>
-  </tr>
-  <tr>
-  	<th>Place</th>
-  	<td></td>
-  </tr>
 
-</table>
 
 </body>
   
