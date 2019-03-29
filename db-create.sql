@@ -24,3 +24,9 @@ CREATE TABLE IF NOT EXISTS rounds (
     target_longitude DECIMAL /* Target's longitude */
 );
 
+CREATE TABLE IF NOT EXISTS round_placements (
+    placement_number INTEGER,
+    round_id INTEGER REFERENCES rounds(id),
+    user_id INTEGER REFERENCES users(id),
+    PRIMARY KEY (round_id, placement_number)
+);
