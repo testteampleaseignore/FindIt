@@ -49,7 +49,6 @@ app.get('/',function(req,res)
 
 app.get('/login', function(req, res)
 {
-	//TODO: make a nice page
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
 		my_title: 'Login'
@@ -59,7 +58,7 @@ app.get('/login', function(req, res)
 app.post('/login', function(req, res)
 {
 	var body = req.body;
-	//TODO
+
 	// Validate the user's submitted login form by
 	// (1) Checking if the hash of the submitted password 
 	//   matches the one we have stored in our database,
@@ -109,11 +108,9 @@ app.post('/register', function(req, res)
 {
 	var body = req.body;
 	var password_hash = bcrypt.hashSync(body.password, 10);
-	// console.log(body);
 	var insert_user = 'INSERT INTO users (user_name, email, password_hash) ' +
 	                      `VALUES ('${body.username}', '${body.email}', '${password_hash}') ` +
 	                      'RETURNING id;' 
-	// console.log(insert_username);
 	db.oneOrNone(insert_user)
 	  .then(function(result) {
 	  	if(result) { 
