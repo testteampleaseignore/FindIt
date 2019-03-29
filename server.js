@@ -72,6 +72,7 @@ app.post('/login', function(req, res)
 			if(result) {
 				if(bcrypt.compareSync(body.password, result.password_hash)) {
 				 // Passwords match
+				 console.log(`User logged in: ${result.id}`);
 				 req.session.userID = result.id;
 				 res.redirect('/playerProfilePage'); 
 				} else {
