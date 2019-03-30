@@ -148,9 +148,6 @@ app.get('/upload', function(req, res) {
 
 app.get('/current_round', function(req, res) {
 	
-	var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
-
-	
 	// Check if the user is logged in or not
 	if (req.session.userID) 
 	{
