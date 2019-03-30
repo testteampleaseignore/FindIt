@@ -140,7 +140,9 @@ app.post('/register', function(req, res)
 	  })
 });
 
-
+app.get('/playerProfile', function(req, res) {
+	res.render('pages/playerProfilePage');
+});
 
 app.get('/upload', function(req, res) {
 	res.render('pages/upload');
