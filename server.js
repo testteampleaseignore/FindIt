@@ -48,7 +48,8 @@ app.get('/',function(req,res)
 	db.one(target_stmt)
 	  .then(function(round){
 		res.render('pages/home', {
-			target_url: round.target_url
+			target_url: round.target_url,
+			my_title: "Home"
 		});	
 
 	});
