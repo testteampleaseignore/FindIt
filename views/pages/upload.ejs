@@ -1,66 +1,61 @@
-<html>
-    <head>
-        <title>FindIt! Feature implementation</title>
-        <link rel="stylesheet" href="findit_test.css">
-    </head>
-    <body>
-        <h1>FindIt! Feature Test</h1>
-        <br>
+<% my_title = 'FindIt! Feature implementation' %>
+<% local_css = 'findit_test.css' %>
 
-        <!-- <form action="/action_page.php">
-            <input type="file" name="pic" accept="image/*">
-            <input type="submit">
-        </form> -->
-        <!-- https://stackoverflow.com/questions/22087076/how-to-make-a-simple-image-upload-using-javascript-html -->
-        <input type="file" onchange="previewFile()"><br>
-        <img src="" height="200" alt="Image preview...">    
+<h1>FindIt! Feature Test</h1>
+<br>
 
-        <script>
-            function previewFile(){
-                var preview = document.querySelector('img'); //selects the query named img
-                var file    = document.querySelector('input[type=file]').files[0]; //sames as here
-                var reader  = new FileReader();
-         
-                reader.onloadend = function () {
-                    preview.src = reader.result;
-                }
-         
-                if (file) {
-                    reader.readAsDataURL(file); //reads the data as a URL
-                }else{
-                    preview.src = "";
-                }
-            }
-            previewFile();
-        </script>
-        <br>
-        <br>
-        To implement here: pull geolocation metadata from img
-        <br>
-        <br>
-        <br>
-        <!-- https://www.w3schools.com/html/tryit.asp?filename=tryhtml5_geolocation -->
-        <button onclick="getLocation()">Get Current Location</button>
-        <p id="demo"></p>
-        <script>
-            var x = document.getElementById("demo");
+<!-- <form action="/action_page.php">
+    <input type="file" name="pic" accept="image/*">
+    <input type="submit">
+</form> -->
+<!-- https://stackoverflow.com/questions/22087076/how-to-make-a-simple-image-upload-using-javascript-html -->
+<input type="file" onchange="previewFile()"><br>
+<img src="" height="200" alt="Image preview...">    
 
-            function getLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(showPosition);
-                }else{ 
-                    x.innerHTML = "Geolocation is not supported by this browser.";
-                }
-            }
+<script>
+    function previewFile(){
+        var preview = document.querySelector('img'); //selects the query named img
+        var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+        var reader  = new FileReader();
+ 
+        reader.onloadend = function () {
+            preview.src = reader.result;
+        }
+ 
+        if (file) {
+            reader.readAsDataURL(file); //reads the data as a URL
+        }else{
+            preview.src = "";
+        }
+    }
+    previewFile();
+</script>
+<br>
+<br>
+To implement here: pull geolocation metadata from img
+<br>
+<br>
+<br>
+<!-- https://www.w3schools.com/html/tryit.asp?filename=tryhtml5_geolocation -->
+<button onclick="getLocation()">Get Current Location</button>
+<p id="demo"></p>
+<script>
+    var x = document.getElementById("demo");
 
-            function showPosition(position) {
-                x.innerHTML = "Current Location: <br>Latitude: " + position.coords.latitude + 
-                "<br>Longitude: " + position.coords.longitude;
-            }
-        </script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        }else{ 
+            x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+
+    function showPosition(position) {
+        x.innerHTML = "Current Location: <br>Latitude: " + position.coords.latitude + 
+        "<br>Longitude: " + position.coords.longitude;
+    }
+</script>
 
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="findit_test.js"></script>
-    </body>
-</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="findit_test.js"></script>

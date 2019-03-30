@@ -40,6 +40,16 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
+function ensureLoggedIn(req, res) {
+	// Check if the user is logged in or not
+	if (req.session && req.session.userID) {	
+		return true;
+	} else {
+        // If not, make them login
+		res.redirect('/login');
+		return false;
+    }
+}
 
 app.get('/',function(req,res)
 {
@@ -48,7 +58,8 @@ app.get('/',function(req,res)
 	db.one(target_stmt)
 	  .then(function(round){
 		res.render('pages/home', {
-			target_url: round.target_url
+			target_url: round.target_url,
+			my_title: "Home"
 		});	
 
 	});
@@ -139,46 +150,42 @@ app.post('/register', function(req, res)
 	  })
 });
 
-
+app.get('/playerProfile', function(req, res) {
+	var loggedin = ensureLoggedIn(req, res);
+	if(loggedin) {
+		res.render('pages/playerProfilePage');
+	}
+});
 
 app.get('/upload', function(req, res) {
-	res.render('pages/upload');
+	var loggedin = ensureLoggedIn(req, res);
+	if(loggedin) {
+		res.render('pages/upload');
+	}
 });
 
 app.get('/current_round', function(req, res) {
 	
-	var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
-
-	
-	// Check if the user is logged in or not
-	if (req.session.userID) 
-	{
+	var loggedin = ensureLoggedIn(req, res);
+	if(loggedin) {
 		var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
-        	return task.batch([
+	    	return task.batch([
 	            task.one(target_url),
 	            task.any(user_name)
 	        ]);
-    	})
-    	.then(item => {
+		})
+		.then(item => {
 	      
 	      res.render('pages/current_round',{
 	      	my_title: "Current Round",
 	        image: item[0],
 	        name: item[1]
 	      })
-    	});
+		});
 	}
-	else 
-    {
-        // If not, make them login
-		res.redirect('/login');
-    }
-
-
 });
-
 
 
 app.listen(3000);

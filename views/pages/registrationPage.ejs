@@ -1,29 +1,8 @@
-<!DOCTYPE html>
-<html lang= "en">
 
-	<head  bgcolor = "#red">
-	    <meta charset="utf-8">
-	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	    <meta name="description" content="">
-	    <title>Registration Page</title>
-	    <!-- Bootstrap core CSS -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-		<link href="../resources/css/my_style.css" rel="stylesheet">
+<% my_title = 'Register' %>
+<% include ../partials/header %>
+<% include ../partials/menu %>      
 
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-
-	  <style>
-		body {
-  			background-color: tomato;
-		}
-		</style>
-
-	 </head>
-
-<body>
 	<h1> Registration Page</h1>
 	<form action="/register" method="post">
 	  Username<br>
@@ -40,4 +19,5 @@
 	  <input type="submit" value="Already have an account">
 
 	</form> 
-</body>
+
+<% include ../partials/footer %>
