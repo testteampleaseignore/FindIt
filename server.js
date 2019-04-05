@@ -148,7 +148,7 @@ app.post('/register', function(req, res)
       	  // Log the successfully registered user in; NOT working yet
       	  req.session.userID = result.id;
 		  // If everything looks good, send the now-logged-in user to the home page
-		  res.redirect('/');
+		  res.redirect('/current_round');
 	  	}
 	  })
 	  .catch((result) => {
