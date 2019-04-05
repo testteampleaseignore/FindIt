@@ -13,6 +13,10 @@ var bodyParser = require('body-parser'); //Ensure our body-parser tool has been 
 app.use(bodyParser.json());              // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+// load .env config file
+const dotenv = require('dotenv');
+dotenv.config();
+
 //Create Database Connection
 var pgp = require('pg-promise')();
 var session = require('express-session');
@@ -204,10 +208,22 @@ app.get('/current_round', function(req, res) {
 		.catch(function(error) {
 		 	console.log(error);	  	
 		});	
-	}
+}	
 });
 
 
-app.listen(3000);
-console.log('3000 is the magic port');
+app.get('/whereami', function(req, res) {
+	res.render('pages/whereami', {
+		my_title: 'Where Am I?',
+		loggedIn: false,
+		keys: {
+			googlemaps: process.env.GOOGLE_MAPS_API_KEY,
+			pn_sub: process.env.PN_SUB_KEY, 
+			pn_pub: process.env.PN_PUB_KEY
+		}
+	});
+});
+
+app.listen(process.env.PORT);
+console.log(`${process.env.PORT} is the magic port`);
 
