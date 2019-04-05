@@ -8,12 +8,18 @@ body {
 	background-color: white;
 }
 
+.no-round {
+  text-align: center;
+}
 .image-container {
     text-align: center;
 }
+.image-container img {
+    width: 70%;
+}
 
-h2 {
-	text-align: center;
+h2.title {
+  text-align: center;
   padding: .2em;
   padding-top: 1em;
   padding-bottom: .5em;
@@ -34,12 +40,8 @@ h2 {
   background-color: #4CAF50; /* Green */
   border: none;
   color: white;
-  padding: 50px 100px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 36px;
-  position: absolute;
-  top: 80%;
-  left: 40%;
 }

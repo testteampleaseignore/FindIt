@@ -2,14 +2,29 @@
 <% include ../partials/menu %>      
 
 <body>
-<br><br>
-<h2 style="text-align: center;">Current Round</h2>
-<div class="image-container">
-  <img src='uploads/<%=image.target_url%>'>
+<h2 class="title">Current Round</h2>
+
+<% if(round) { %>
+
+<div class="container image-container">
+  <img src='uploads/<%=round.target_url%>'>
 </div>
-<div class="button-container">
-<button class="button" onclick="alert('Check location against the picture location and do stuff')">Found It!</button>
+<div class="container button-container">
+  <button class="button" 
+        onclick="alert('Check location against the picture location and do stuff')">
+        Found It!
+  </button>
 </div>
+
+<% } else { %>
+
+<div class="no-round jumbotron">
+	<h1>No rounds are currently going on!</h1>
+</div>
+
+<% } %>
+
+
 
 </body>
 </html>

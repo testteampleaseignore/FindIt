@@ -5,8 +5,14 @@
   <h1 class="w3-margin w3-jumbo">FIND IT</h1>
 </header>
 
+<% if(target_url) { %>
 <div class="image-container">
 	<img src="uploads/<%=target_url%>">
 </div>		
+<% } else { %>
+<div class="no-round jumbotron">
+	<h1>No rounds are currently going on!</h1>
+</div>
+<% } %>
 				
 <% include ../partials/footer %>
