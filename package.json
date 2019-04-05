@@ -1,19 +1,20 @@
 {
-    "name": "FindIt!",
-    "main": "server.js",
-    "dependencies": {
-        "bcrypt": "^3.0.4",
-        "ejs": "^2.5.5",
-        "ejs-lint": "^0.3.0",
-        "express": "^4.16.4",
-        "express-session": "^1.15.6",
-        "npm": "^6.9.0",
-        "pg-promise": "^8.5.1"
-    },
-    "scripts": {
-        "watch": "nodemon server.js"
-    },
-    "devDependencies": {
-        "nodemon": "^1.18.10"
-    }
+  "name": "FindIt!",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "dotenv": "^7.0.0",
+    "ejs": "^2.5.5",
+    "ejs-lint": "^0.3.0",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "npm": "^6.9.0",
+    "pg-promise": "^8.5.1"
+  },
+  "scripts": {
+    "watch": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
 }
