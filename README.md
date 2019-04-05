@@ -15,18 +15,22 @@ Where we store the code for FindIt!
 - Run `npm install` inside the project directory (after you clone it). This should install all requirements as stored in package.json
 - You can execute `npm run watch` at the terminal, from this project directory, to both (1) serve / run the project, and  (2) automatically update the server when changes are made. This is just a handy way to develop the app without restarting the server over and over. 
 
+#### General
+
+Initialize an environment variable config:
+`cp .env{.example,}`
+
 ### Proposed Tasks Remaining 
 
 + [x] Home page (blank)
 + [x] Login Page
 + [x] Register Page
 + [x] Upload Target Page
-+ [ ] Selecting a Target location
 + [ ] Target / Location persistence
-+ [ ] Checking a target location
-+ [ ] Make round placement-to-score logic
-+ [ ] Current Round Display (on Home page)
-+ [ ] Player stats Profile
++ [p] Checking a target location
++ [p] Make round placement-to-score logic
++ [p] Current Round Display (on Home page)
++ [p] Player stats Profile
 + [ ] Transition to new round logic
 + [ ] Reporting a picture
 
