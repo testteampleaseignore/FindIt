@@ -3,8 +3,11 @@
 
 <body>
 <h2 class="title">Current Round</h2>
+
+<% if(round) { %>
+
 <div class="container image-container">
-  <img src='uploads/<%=image.target_url%>'>
+  <img src='uploads/<%=round.target_url%>'>
 </div>
 <div class="container button-container">
   <button class="button" 
@@ -12,6 +15,16 @@
         Found It!
   </button>
 </div>
+
+<% } else { %>
+
+<div class="no-round jumbotron">
+	<h1>No rounds are currently going on!</h1>
+</div>
+
+<% } %>
+
+
 
 </body>
 </html>

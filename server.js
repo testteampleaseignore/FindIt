@@ -55,14 +55,18 @@ app.get('/',function(req,res)
 {
 	var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 
-	db.one(target_stmt)
+	db.oneOrNone(target_stmt)
 	  .then(function(round){
 		res.render('pages/home', {
-			target_url: round.target_url,
-			my_title: "Home"
-		});	
+			target_url: round ? round.target_url : null,
+			my_title: "Home",
+			loggedIn: false
+		})
+	})
+	.catch(function(error) {
+		console.log(error);
+  	});	
 
-	});
 });
 
 app.get('/login', function(req, res)
@@ -180,19 +184,24 @@ app.get('/current_round', function(req, res) {
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
 	    	return task.batch([
-	            task.one(target_url),
-	            task.any(user_name)
+	            task.oneOrNone(target_url),
+	            task.one(user_name)
 	        ]);
 		})
-		.then(item => {
-	      
+		.then(results => {
+	      let round = results[0];
+	      let user = results[1];
+
 	      res.render('pages/current_round',{
 	      	my_title: "Current Round",
-	        image: item[0],
-	        name: item[1],
+	        round: round ? round : null,
+	        name: user,
 	        loggedIn: true
 	      })
-		});
+		})
+		.catch(function(error) {
+		 	console.log(error);	  	
+		});	
 	}
 });
 

@@ -8,6 +8,9 @@ body {
 	background-color: white;
 }
 
+.no-round {
+  text-align: center;
+}
 .image-container {
     text-align: center;
 }
