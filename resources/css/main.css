@@ -12,8 +12,8 @@ body {
     text-align: center;
 }
 
-h2 {
-	text-align: center;
+h2.title {
+  text-align: center;
   padding: .2em;
   padding-top: 1em;
   padding-bottom: .5em;
