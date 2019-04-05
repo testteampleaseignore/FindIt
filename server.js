@@ -69,7 +69,8 @@ app.get('/login', function(req, res)
 {
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
-		my_title: 'Login'
+		my_title: 'Login',
+		loggedIn: false
 	});
 });
 
@@ -119,7 +120,8 @@ app.get('/logout', function(req, res)
 app.get('/register', function(req, res)
 {
 	res.render('pages/registrationPage', {
-		error: req.query.error
+		error: req.query.error,
+		loggedIn: false
 	});
 });
 
@@ -153,14 +155,20 @@ app.post('/register', function(req, res)
 app.get('/playerProfile', function(req, res) {
 	var loggedin = ensureLoggedIn(req, res);
 	if(loggedin) {
-		res.render('pages/playerProfilePage');
+		res.render('pages/playerProfilePage', {
+			my_title: 'Player Profile',
+			loggedIn: true
+		});
 	}
 });
 
 app.get('/upload', function(req, res) {
 	var loggedin = ensureLoggedIn(req, res);
 	if(loggedin) {
-		res.render('pages/upload');
+		res.render('pages/upload', {
+			my_title: 'Upload',
+			loggedIn: true
+		});
 	}
 });
 
@@ -181,7 +189,8 @@ app.get('/current_round', function(req, res) {
 	      res.render('pages/current_round',{
 	      	my_title: "Current Round",
 	        image: item[0],
-	        name: item[1]
+	        name: item[1],
+	        loggedIn: true
 	      })
 		});
 	}
