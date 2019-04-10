@@ -8,6 +8,7 @@
     "ejs-lint": "^0.3.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "multer": "^1.4.1",
     "npm": "^6.9.0",
     "pg-promise": "^8.5.1"
   },

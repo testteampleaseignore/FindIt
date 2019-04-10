@@ -12,6 +12,18 @@ var app = express();
 var bodyParser = require('body-parser'); //Ensure our body-parser tool has been added
 app.use(bodyParser.json());              // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+const multer = require('multer'); //multer
+
+// SET STORAGE
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + '.jpeg')
+  }
+})
+var upload = multer({ storage: storage })
 
 // load .env config file
 const dotenv = require('dotenv');
@@ -34,7 +46,7 @@ app.use(express.static(__dirname + '/')); //This line is necessary for us to use
 // Create a session and initialize
 // a not-so-secret secret key
 app.use(session({
-	'secret': 'whisper'
+	'secret': 'whisper', cookie: {maxAge: 60000}
 }));
 
 // One way we could handle score upload logic
@@ -56,6 +68,28 @@ function ensureLoggedIn(req, res) {
 		return false;
     }
 }
+
+app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
+  const file = req.file
+  if (!file) {
+    const error = new Error('Please upload a file')
+    error.httpStatusCode = 400
+    return next(error)
+  }
+    var insert_round = 'INSERT INTO rounds ' +
+    '(starter_id, datetime_started, target_url) ' +
+    `values (${req.session.userID}, '2019-04-09 00:00:00', '${req.file.filename}')`;
+    
+    db.oneOrNone(insert_round)
+	  .then(function(result) {
+	  	res.redirect('/current_round');
+	  })
+	  .catch((result) => {
+	  	console.log(result);
+	    console.log(result.message);
+        res.redirect('/upload');
+	  })
+})
 
 app.get('/',function(req,res)
 {

@@ -1,16 +1,16 @@
 <% my_title = 'FindIt! Feature implementation' %>
 <% local_css = 'findit_test.css' %>
+<% include ../partials/header %>
+<% include ../partials/menu %>
 
-<h1>FindIt! Feature Test</h1>
+<h1>Create New Round</h1>
 <br>
 
-<!-- <form action="/action_page.php">
-    <input type="file" name="pic" accept="image/*">
-    <input type="submit">
-</form> -->
-<!-- https://stackoverflow.com/questions/22087076/how-to-make-a-simple-image-upload-using-javascript-html -->
-<input type="file" onchange="previewFile()"><br>
-<img src="" height="200" alt="Image preview...">    
+<form action="/uploadfile" enctype="multipart/form-data" method="POST"> 
+   <input type="file" name="myFile" onchange="previewFile()"/>
+   <img src="" height="200" alt="Image preview...">
+   <input id="subbutton" type="submit" value="Submit" disabled/>
+</form>
 
 <script>
     function previewFile(){
@@ -20,6 +20,7 @@
  
         reader.onloadend = function () {
             preview.src = reader.result;
+            document.getElementById('subbutton').disabled = false;
         }
  
         if (file) {
@@ -30,32 +31,7 @@
     }
     previewFile();
 </script>
-<br>
-<br>
-To implement here: pull geolocation metadata from img
-<br>
-<br>
-<br>
-<!-- https://www.w3schools.com/html/tryit.asp?filename=tryhtml5_geolocation -->
-<button onclick="getLocation()">Get Current Location</button>
-<p id="demo"></p>
-<script>
-    var x = document.getElementById("demo");
-
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        }else{ 
-            x.innerHTML = "Geolocation is not supported by this browser.";
-        }
-    }
-
-    function showPosition(position) {
-        x.innerHTML = "Current Location: <br>Latitude: " + position.coords.latitude + 
-        "<br>Longitude: " + position.coords.longitude;
-    }
-</script>
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="findit_test.js"></script>
+<% include ../partials/footer %>
