@@ -14,11 +14,9 @@ app.use(bodyParser.json());              // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 const multer = require('multer'); //multer
 
-// SET STORAGE
+// Setup uploads
 var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads')
-  },
+  destination: 'uploads',
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + '.jpeg')
   }
@@ -31,7 +29,12 @@ dotenv.config();
 
 //Create Database Connection
 var pgp = require('pg-promise')();
-var session = require('express-session');
+var session = require('express-session')({
+	secret: 'whisper', 
+	cookie: {maxAge: 60000},
+	saveUninitialized: true,
+	resave: true
+});
 var bcrypt = require('bcrypt');
 var fs = require('fs');
 
@@ -45,9 +48,7 @@ app.use(express.static(__dirname + '/')); //This line is necessary for us to use
 
 // Create a session and initialize
 // a not-so-secret secret key
-app.use(session({
-	secret: 'whisper'
-}));
+app.use(session);
 
 // One way we could handle score upload logic
 var PLACEMENTS_TO_POINTS = {
