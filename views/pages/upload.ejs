@@ -7,7 +7,7 @@
 <br>
 
 <form action="/uploadfile" enctype="multipart/form-data" method="POST"> 
-   <input type="file" name="myFile" onchange="previewFile()"/>
+   <input type="file" accept="image/*" capture name="myFile" onchange="previewFile()"/>
    <img src="" height="200" alt="Image preview...">
    <input id="subbutton" type="submit" value="Submit" disabled/>
 </form>
