@@ -6,7 +6,7 @@
 <h1>Create New Round</h1>
 <br>
 
-<form action="/uploadfile" enctype="multipart/form-data" method="POST"> 
+<form action="/uploadTarget" enctype="multipart/form-data" method="POST"> 
    <input type="file" name="myFile" onchange="previewFile()"/>
    <img src="" height="200" alt="Image preview...">
    <input id="subbutton" type="submit" value="Submit" disabled/>
@@ -20,6 +20,7 @@
  
         reader.onloadend = function () {
             preview.src = reader.result;
+            // enable the submit button when a file is loaded
             document.getElementById('subbutton').disabled = false;
         }
  

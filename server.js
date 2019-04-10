@@ -69,39 +69,12 @@ function ensureLoggedInOrRedirect(req, res) {
     }
 }
 
-app.post('/uploadfile', upload.single('myFile'), function(req, res, next) {
-
-	loggedIn = ensureLoggedInOrRedirect();
-	if (loggedIn) {
-		const file = req.file
-	  	if (!file) {
-	    	const error = new Error('Please upload a file')
-	    	error.httpStatusCode = 400
-	    	return next(error)
-	  	}
-	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-	    var insert_round = 'INSERT INTO rounds ' +
-	    '(starter_id, datetime_started, target_url) ' +
-	    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
-	    
-	    db.oneOrNone(insert_round)
-		  .then(function(result) {
-		  	res.redirect('/current_round');
-		  })
-		  .catch((result) => {
-		  	console.log(result);
-		    console.log(result.message);
-	        res.redirect('/upload');
-		  });
-	}
-})
-
 app.get('/',function(req,res)
 {	
 	// If already logged in, redirect to current round page,
 	// which has all features of this page but more
 	if (req.session.userID) {
-		res.redirect('/current_round');
+		res.redirect('/currentRound');
 	}
 
 	var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
@@ -146,7 +119,7 @@ app.post('/login', function(req, res)
 				 // Passwords match
 				 console.log(`User logged in: ${result.id}`);
 				 req.session.userID = result.id;
-				 res.redirect('/current_round'); 
+				 res.redirect('/currentRound'); 
 				} else {
 				 // (3) On different failures, return the user to the 
 				 // login page and display a new error message explaining 
@@ -193,7 +166,7 @@ app.post('/register', function(req, res)
       	  // Log the successfully registered user in; NOT working yet
       	  req.session.userID = result.id;
 		  // If everything looks good, send the now-logged-in user to the home page
-		  res.redirect('/current_round');
+		  res.redirect('/currentRound');
 	  	}
 	  })
 	  .catch((result) => {
@@ -227,17 +200,44 @@ app.get('/leaderboard', function(req, res) {
 	}
 });
 
-app.get('/upload', function(req, res) {
+app.get('/startRound', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		res.render('pages/upload', {
-			my_title: 'Upload',
+		res.render('pages/startRound', {
+			my_title: 'Start a round',
 			loggedIn: true
 		});
 	}
 });
 
-app.get('/current_round', function(req, res) {
+app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
+
+	loggedIn = ensureLoggedInOrRedirect();
+	if (loggedIn) {
+		const file = req.file
+	  	if (!file) {
+	    	const error = new Error('Please upload a file')
+	    	error.httpStatusCode = 400
+	    	return next(error)
+	  	}
+	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+	    var insert_round = 'INSERT INTO rounds ' +
+	    '(starter_id, datetime_started, target_url) ' +
+	    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
+	    
+	    db.oneOrNone(insert_round)
+		  .then(function(result) {
+		  	res.redirect('/currentRound');
+		  })
+		  .catch((result) => {
+		  	console.log(result);
+		    console.log(result.message);
+	        res.redirect('/upload');
+		  });
+	}
+})
+
+app.get('/currentRound', function(req, res) {
 	
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
@@ -253,7 +253,7 @@ app.get('/current_round', function(req, res) {
 	      let round = results[0];
 	      let user = results[1];
 
-	      res.render('pages/current_round',{
+	      res.render('pages/currentRound',{
 	      	my_title: "Current Round",
 	        round: round ? round : null,
 	        name: user,
@@ -266,6 +266,7 @@ app.get('/current_round', function(req, res) {
 }	
 });
 
+// TODO: Get rid of this route when it's appropriate
 app.get('/whereami', function(req, res) {
 	res.render('pages/whereami', {
 		my_title: 'Where Am I?',
