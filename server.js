@@ -64,7 +64,7 @@ app.post('/login', function(req, res)
 				if(bcrypt.compareSync(body.password, result.password_hash)) {
 				 // Passwords match
 				 req.session.userID = result.id;
-				 res.redirect('/playerProfilePage'); 
+				 res.redirect('/postLoginPage'); 
 				} else {
 				 // (3) On different failures, return the user to the 
 				 // login page and display a new error message explaining 
@@ -132,8 +132,8 @@ app.get('/upload', function(req, res) {
 	res.render('pages/upload');
 });
 
-app.get('/playerProfilePage', function(req, res) {
-	res.render('pages/playerProfilePage');
+app.get('/postLoginPage', function(req, res) {
+	res.render('pages/postLoginPage');
 	// Check if the user is logged in or not
 	if (req.session.userID) 
 	{
@@ -153,6 +153,35 @@ app.get('/playerProfilePage', function(req, res) {
     }
 
 
+});
+
+app.get('/profile', function(req, res)
+{
+	//var body = req.body;
+	//var get_username =" SELECT user_name FROM users WHERE user_name='"+ body.username+"';"
+	//res.render('pages/profile');
+	
+	if (req.session.userID) 
+	{
+		/*res.render('pages/profile',{
+			my_title: "Player Profile Page"
+		});*/
+
+		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
+		  .then(function(result) {
+		  	console.log(`User logged in: ${result.user_name}`);
+		  	res.render('pages/profile', {
+				my_title: " Profile Home Page",
+				username: result.user_name
+			});
+		  })
+	}
+	else 
+    {
+        // If not, make them login
+		res.redirect('/login');
+    }
+	
 });
 
 
