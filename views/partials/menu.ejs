@@ -1,21 +1,16 @@
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	  <a class="navbar-brand" href="home.html">
-		<img class="rounded-circle" src="../resources/img/cu_boulder_logo.jpg" alt="" width="30" height="30">
-	  </a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	  </button>
-	  <div class="collapse navbar-collapse" id="navbarText">
-		<ul class="navbar-nav mr-auto">
-		  <li class="nav-item">
-			<a class="nav-link" href="/">Home</a>
-			</li>
-		  <li class="nav-item">
-			<a class="nav-link" href="/upload">Upload</a>
-		  </li>
-		</ul>
-		<div class="form-inline my-2 my-lg-0">
-			<button class="btn btn-outline-light my-2 my-sm-0" type="submit" onclick="window.location.href='/logout';">Logout</button>
-		</div>
-	  </div>
-	</nav>
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+ 
+ 	<% if(!loggedIn) { %>
+    <a href="/register" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Register</a>
+    <a href="/login" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Login</a>
+    <% } else { %>
+    <a href="/leaderboard" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Leaderboard</a>
+    <a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Upload</a>
+    <a href="/whereami" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Where Am I?</a>
+    <% } %>
+  </div>
+</div>
+<div id="content">

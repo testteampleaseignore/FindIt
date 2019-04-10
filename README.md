@@ -7,7 +7,7 @@ Where we store the code for FindIt!
 - Enter a Postgres terminal and, if you don't already have a database, make one called "findit". If your named yours differently, that's OK. 
 - Enter the database with "\c findit" (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- Copy db-config.json.example to db-config.json, e.g. `db-config.json{.example,}`.
+- Copy db-config.json.example to db-config.json; a quick command for that is: `cp db-config.json{.example,}`.
 - Modify your new db-config.json file to match your PostgreSQL credentials: password, user, etc.
 
 #### NodeJS stuff
@@ -15,18 +15,22 @@ Where we store the code for FindIt!
 - Run `npm install` inside the project directory (after you clone it). This should install all requirements as stored in package.json
 - You can execute `npm run watch` at the terminal, from this project directory, to both (1) serve / run the project, and  (2) automatically update the server when changes are made. This is just a handy way to develop the app without restarting the server over and over. 
 
+#### General
+
+Initialize an environment variable config:
+`cp .env{.example,}`
+
 ### Proposed Tasks Remaining 
 
 + [x] Home page (blank)
 + [x] Login Page
 + [x] Register Page
 + [x] Upload Target Page
-+ [ ] Selecting a Target location
 + [ ] Target / Location persistence
-+ [ ] Checking a target location
-+ [ ] Make round placement-to-score logic
-+ [ ] Current Round Display (on Home page)
-+ [ ] Player stats Profile
++ [p] Checking a target location
++ [p] Make round placement-to-score logic
++ [p] Current Round Display (on Home page)
++ [p] Player stats Profile
 + [ ] Transition to new round logic
 + [ ] Reporting a picture
 
@@ -72,3 +76,9 @@ If the round_placements table looked like this...
     times_placed_first 
     --------------------
                   2
+		  
+To get some testing data right away to start hacking,
+run `psql -U <username> <dbname> < testing-db.sql`,
+taking care to replace username and dbname appropriately.
+
+
