@@ -76,9 +76,10 @@ app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
     error.httpStatusCode = 400
     return next(error)
   }
+    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
     var insert_round = 'INSERT INTO rounds ' +
     '(starter_id, datetime_started, target_url) ' +
-    `values (${req.session.userID}, '2019-04-09 00:00:00', '${req.file.filename}')`;
+    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
     
     db.oneOrNone(insert_round)
 	  .then(function(result) {
