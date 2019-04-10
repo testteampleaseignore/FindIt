@@ -15,7 +15,9 @@ body {
     text-align: center;
 }
 .image-container img {
-    width: 70%;
+    max-width: 60%;
+    min-width: 40%;
+    max-height: 60%;
 }
 
 h2.title {
