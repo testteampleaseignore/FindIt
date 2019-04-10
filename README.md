@@ -26,7 +26,7 @@ Initialize an environment variable config:
 + [x] Login Page
 + [x] Register Page
 + [x] Upload Target Page
-+ [ ] Target / Location persistence
++ [x] Target / Location persistence
 + [p] Checking a target location
 + [p] Make round placement-to-score logic
 + [p] Current Round Display (on Home page)
