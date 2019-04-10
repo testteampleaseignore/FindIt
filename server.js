@@ -194,7 +194,7 @@ app.get('/profile', function(req, res) {
 app.get('/leaderboard', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		res.render('pages/leaderboard', {
+		res.render('pages/Leaderboard', {
 			my_title: 'Leaderboard',
 			loggedIn: true
 		});
