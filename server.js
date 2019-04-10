@@ -162,11 +162,21 @@ app.post('/register', function(req, res)
 	  })
 });
 
-app.get('/playerProfile', function(req, res) {
+app.get('/profile', function(req, res) {
 	var loggedin = ensureLoggedIn(req, res);
 	if(loggedin) {
 		res.render('pages/playerProfilePage', {
 			my_title: 'Player Profile',
+			loggedIn: true
+		});
+	}
+});
+
+app.get('/leaderboard', function(req, res) {
+	var loggedin = ensureLoggedIn(req, res);
+	if(loggedin) {
+		res.render('pages/leaderboard', {
+			my_title: 'Leaderboard',
 			loggedIn: true
 		});
 	}
@@ -210,36 +220,6 @@ app.get('/current_round', function(req, res) {
 		});	
 }	
 });
-
-app.get('/profile', function(req, res)
-{
-	//var body = req.body;
-	//var get_username =" SELECT user_name FROM users WHERE user_name='"+ body.username+"';"
-	//res.render('pages/profile');
-	
-	if (req.session.userID) 
-	{
-		/*res.render('pages/profile',{
-			my_title: "Player Profile Page"
-		});*/
-
-		db.one('SELECT user_name FROM users WHERE id=$1', [req.session.userID])
-		  .then(function(result) {
-		  	console.log(`User logged in: ${result.user_name}`);
-		  	res.render('pages/profile', {
-				my_title: " Profile Home Page",
-				username: result.user_name
-			});
-		  })
-	}
-	else 
-    {
-        // If not, make them login
-		res.redirect('/login');
-    }
-	
-});
-
 
 app.get('/whereami', function(req, res) {
 	res.render('pages/whereami', {
