@@ -46,7 +46,7 @@ app.use(express.static(__dirname + '/')); //This line is necessary for us to use
 // Create a session and initialize
 // a not-so-secret secret key
 app.use(session({
-	'secret': 'whisper', cookie: {maxAge: 60000}
+	secret: 'whisper'
 }));
 
 // One way we could handle score upload logic
@@ -58,7 +58,7 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
-function ensureLoggedIn(req, res) {
+function ensureLoggedInOrRedirect(req, res) {
 	// Check if the user is logged in or not
 	if (req.session && req.session.userID) {	
 		return true;
@@ -69,31 +69,41 @@ function ensureLoggedIn(req, res) {
     }
 }
 
-app.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
-  const file = req.file
-  if (!file) {
-    const error = new Error('Please upload a file')
-    error.httpStatusCode = 400
-    return next(error)
-  }
-    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    var insert_round = 'INSERT INTO rounds ' +
-    '(starter_id, datetime_started, target_url) ' +
-    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
-    
-    db.oneOrNone(insert_round)
-	  .then(function(result) {
-	  	res.redirect('/current_round');
-	  })
-	  .catch((result) => {
-	  	console.log(result);
-	    console.log(result.message);
-        res.redirect('/upload');
-	  })
+app.post('/uploadfile', upload.single('myFile'), function(req, res, next) {
+
+	loggedIn = ensureLoggedInOrRedirect();
+	if (loggedIn) {
+		const file = req.file
+	  	if (!file) {
+	    	const error = new Error('Please upload a file')
+	    	error.httpStatusCode = 400
+	    	return next(error)
+	  	}
+	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+	    var insert_round = 'INSERT INTO rounds ' +
+	    '(starter_id, datetime_started, target_url) ' +
+	    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
+	    
+	    db.oneOrNone(insert_round)
+		  .then(function(result) {
+		  	res.redirect('/current_round');
+		  })
+		  .catch((result) => {
+		  	console.log(result);
+		    console.log(result.message);
+	        res.redirect('/upload');
+		  });
+	}
 })
 
 app.get('/',function(req,res)
-{
+{	
+	// If already logged in, redirect to current round page,
+	// which has all features of this page but more
+	if (req.session.userID) {
+		res.redirect('/current_round');
+	}
+
 	var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 
 	db.oneOrNone(target_stmt)
@@ -115,7 +125,7 @@ app.get('/login', function(req, res)
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
 		my_title: 'Login',
-		loggedIn: false
+		loggedIn: req.session.userID !== undefined
 	});
 });
 
@@ -166,7 +176,7 @@ app.get('/register', function(req, res)
 {
 	res.render('pages/registrationPage', {
 		error: req.query.error,
-		loggedIn: false
+		loggedIn: req.session.userID !== undefined
 	});
 });
 
@@ -198,7 +208,7 @@ app.post('/register', function(req, res)
 });
 
 app.get('/profile', function(req, res) {
-	var loggedin = ensureLoggedIn(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/playerProfilePage', {
 			my_title: 'Player Profile',
@@ -208,7 +218,7 @@ app.get('/profile', function(req, res) {
 });
 
 app.get('/leaderboard', function(req, res) {
-	var loggedin = ensureLoggedIn(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/leaderboard', {
 			my_title: 'Leaderboard',
@@ -218,7 +228,7 @@ app.get('/leaderboard', function(req, res) {
 });
 
 app.get('/upload', function(req, res) {
-	var loggedin = ensureLoggedIn(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/upload', {
 			my_title: 'Upload',
@@ -229,7 +239,7 @@ app.get('/upload', function(req, res) {
 
 app.get('/current_round', function(req, res) {
 	
-	var loggedin = ensureLoggedIn(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';

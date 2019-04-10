@@ -3,14 +3,21 @@
   <div class="w3-bar w3-red w3-card w3-left-align w3-large">
     <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
  
+    <!-- If not logged in, don't show the main navigation -->
  	<% if(!loggedIn) { %>
+
     <a href="/register" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Register</a>
     <a href="/login" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Login</a>
+
+    <!-- If logged in, show the main navigation -->
     <% } else { %>
-    <a href="/profile" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Profile</a>
+
+    <a href="/current_round" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Current Round</a>
+    <a href="/profile" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">My Profile</a>
     <a href="/leaderboard" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Leaderboard</a>
     <a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Upload</a>
     <a href="/whereami" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Where Am I?</a>
+
     <% } %>
   </div>
 </div>
