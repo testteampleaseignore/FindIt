@@ -213,7 +213,7 @@ app.get('/startRound', function(req, res) {
 
 app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 
-	loggedIn = ensureLoggedInOrRedirect();
+	loggedIn = ensureLoggedInOrRedirect(req, res);
 	if (loggedIn) {
 		const file = req.file
 	  	if (!file) {
