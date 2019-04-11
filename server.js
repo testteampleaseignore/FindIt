@@ -20,7 +20,8 @@ var storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + '.jpeg')
   }
-})
+});
+
 var upload = multer({ storage: storage })
 
 // load .env config file
@@ -29,12 +30,9 @@ dotenv.config();
 
 //Create Database Connection
 var pgp = require('pg-promise')();
-var session = require('express-session')({
-	secret: 'whisper', 
-	cookie: {maxAge: 60000},
-	saveUninitialized: true,
-	resave: true
-});
+var session = require('express-session');
+var pgSession = require('connect-pg-simple')(session);
+
 var bcrypt = require('bcrypt');
 var fs = require('fs');
 
@@ -48,7 +46,12 @@ app.use(express.static(__dirname + '/')); //This line is necessary for us to use
 
 // Create a session and initialize
 // a not-so-secret secret key
-app.use(session);
+app.use(session({
+	secret: 'whisper', 
+	saveUninitialized: true,
+	resave: true,
+	store: new pgSession({pgPromise: db})
+}));
 
 // One way we could handle score upload logic
 var PLACEMENTS_TO_POINTS = {
@@ -76,21 +79,22 @@ app.get('/',function(req,res)
 	// which has all features of this page but more
 	if (req.session.userID) {
 		res.redirect('/currentRound');
-	}
+	} else {
 
-	var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
+		var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 
-	db.oneOrNone(target_stmt)
-	  .then(function(round){
-		res.render('pages/home', {
-			target_url: round ? round.target_url : null,
-			my_title: "Home",
-			loggedIn: false
+		db.oneOrNone(target_stmt)
+		  .then(function(round){
+			res.render('pages/home', {
+				target_url: round ? round.target_url : null,
+				my_title: "Home",
+				loggedIn: false
+			})
 		})
-	})
-	.catch(function(error) {
-		console.log(error);
-  	});	
+		.catch(function(error) {
+			console.log(error);
+	  	});	
+	}
 
 });
 
@@ -120,7 +124,9 @@ app.post('/login', function(req, res)
 				 // Passwords match
 				 console.log(`User logged in: ${result.id}`);
 				 req.session.userID = result.id;
-				 res.redirect('/currentRound'); 
+				 req.session.save(function(err) {
+				 	res.redirect('/currentRound');
+				 }); 
 				} else {
 				 // (3) On different failures, return the user to the 
 				 // login page and display a new error message explaining 
@@ -143,7 +149,9 @@ app.post('/login', function(req, res)
 app.get('/logout', function(req, res)
 {
 	req.session.userID = null;
-	res.redirect('/');
+	req.session.save(function(err) {
+		res.redirect('/');
+	});
 });
 
 app.get('/register', function(req, res)
@@ -166,8 +174,10 @@ app.post('/register', function(req, res)
 	  	if(result) { 
       	  // Log the successfully registered user in; NOT working yet
       	  req.session.userID = result.id;
-		  // If everything looks good, send the now-logged-in user to the home page
-		  res.redirect('/currentRound');
+      	  req.session.save(function(err) {
+			  // If everything looks good, send the now-logged-in user to the home page
+			  res.redirect('/currentRound');
+      	  });
 	  	}
 	  })
 	  .catch((result) => {
