@@ -38,6 +38,12 @@ h2.title {
 .image-container {
   text-align: center;
 }
+
+.container {
+  padding: 16px;
+}
+
+
 .button{
   background-color: #4CAF50; /* Green */
   border: none;
@@ -46,4 +52,7 @@ h2.title {
   text-decoration: none;
   display: inline-block;
   font-size: 36px;
+  width: 100%;
+  padding: 14px 20px;
+  margin: 8px 0;
 }
