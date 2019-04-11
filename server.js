@@ -157,6 +157,7 @@ app.get('/logout', function(req, res)
 app.get('/register', function(req, res)
 {
 	res.render('pages/registrationPage', {
+		my_title: 'Register',
 		error: req.query.error,
 		loggedIn: req.session.userID == false
 	});
@@ -215,7 +216,7 @@ app.get('/startRound', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/startRound', {
-			my_title: 'Start a round',
+			my_title: 'Start Round',
 			loggedIn: true
 		});
 	}

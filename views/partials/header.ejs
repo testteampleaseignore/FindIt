@@ -21,10 +21,20 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <!-- Custom styles for one page -->
   	<% if(typeof local_css == 'string' && local_css){ %>
-  	 <link href="../resources/css/<%= local_css %>" rel="stylesheet">
+  	 <link type="text/css" href="../resources/css/<%= local_css %>" rel="stylesheet">
   	<% } %>
     <!-- Custom styles for the whole site -->
   	<link href="../resources/css/main.css" rel="stylesheet">
-	
+	 <script>
+    function onMobileHamburgerClick() {
+      var x = document.getElementById("mobile-nav");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else { 
+        x.className = x.className.replace("w3-show", "");
+      }
+    }
+    </script>
+
   </head>
   <body>
