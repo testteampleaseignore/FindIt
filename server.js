@@ -103,7 +103,7 @@ app.get('/login', function(req, res)
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
 		my_title: 'Login',
-		loggedIn: req.session.userID !== undefined
+		loggedIn: req.session.userID == false
 	});
 });
 
@@ -158,7 +158,7 @@ app.get('/register', function(req, res)
 {
 	res.render('pages/registrationPage', {
 		error: req.query.error,
-		loggedIn: req.session.userID !== undefined
+		loggedIn: req.session.userID == false
 	});
 });
 
