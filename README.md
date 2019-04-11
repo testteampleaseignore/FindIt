@@ -9,6 +9,7 @@ Where we store the code for FindIt!
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
 - Copy db-config.json.example to db-config.json; a quick command for that is: `cp db-config.json{.example,}`.
 - Modify your new db-config.json file to match your PostgreSQL credentials: password, user, etc.
+- Create a session table for session management: ` cat node_modules/connect-pg-simple/table.sql > psql -U postgres -d findit`
 
 #### NodeJS stuff
 
