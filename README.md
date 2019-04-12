@@ -20,6 +20,8 @@ Where we store the code for FindIt!
 
 Initialize an environment variable config:
 `cp .env{.example,}`
+Add a session table for session management:
+`psql <user> < node_modules/connect-pg-simple/table.sql`
 
 ### Proposed Tasks Remaining 
 
