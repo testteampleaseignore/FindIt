@@ -217,7 +217,12 @@ app.get('/startRound', function(req, res) {
 	if(loggedin) {
 		res.render('pages/startRound', {
 			my_title: 'Start Round',
-			loggedIn: true
+			loggedIn: true,
+            keys: {
+			googlemaps: process.env.GOOGLE_MAPS_API_KEY,
+			pn_sub: process.env.PN_SUB_KEY, 
+			pn_pub: process.env.PN_PUB_KEY
+		}
 		});
 	}
 });
