@@ -34,11 +34,9 @@ var session = require('express-session');
 var pgSession = require('connect-pg-simple')(session);
 
 var bcrypt = require('bcrypt');
-var fs = require('fs');
 
 // get db & its configuration
-var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
-var db = pgp(dbConfig);
+var db = pgp(process.env.DATABASE_URL);
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
