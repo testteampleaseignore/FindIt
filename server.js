@@ -10,6 +10,8 @@
 var express = require('express'); //Ensure our express framework has been added
 var app = express();
 var bodyParser = require('body-parser'); //Ensure our body-parser tool has been added
+var fs = require('fs');
+
 app.use(bodyParser.json());              // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 const multer = require('multer'); //multer
@@ -35,8 +37,16 @@ var pgSession = require('connect-pg-simple')(session);
 
 var bcrypt = require('bcrypt');
 
-// get db & its configuration
-var db = pgp(process.env.DATABASE_URL);
+// get db & its configuration...
+// support old use of db-config.json for now;
+// TODO: get rid of db-config.json because we can just use .env
+if(process.env.DATABASE_URL) {
+    console.log(process.env.DATABASE_URL);
+    var db = pgp(process.env.DATABASE_URL);
+} else {
+    var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
+    var db = pgp(dbConfig);
+}
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
