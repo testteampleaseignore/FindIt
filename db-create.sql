@@ -1,6 +1,8 @@
 
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS rounds;
+DROP TABLE IF EXISTS round_attempts;
+DROP TABLE IF EXISTS round_placements;
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,       /* Unique identifier for each player (it's possible multiple 
@@ -24,9 +26,16 @@ CREATE TABLE IF NOT EXISTS rounds (
     target_longitude DECIMAL /* Target's longitude */
 );
 
+CREATE TABLE IF NOT EXISTS round_attempts (
+    round_id INTEGER REFERENCES rounds(id),
+    user_id INTEGER REFERENCES users(id),
+    PRIMARY KEY (round_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS round_placements (
     placement_number INTEGER,
     round_id INTEGER REFERENCES rounds(id),
     user_id INTEGER REFERENCES users(id),
     PRIMARY KEY (round_id, placement_number)
 );
+

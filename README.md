@@ -45,7 +45,6 @@ Add a session table for session management:
 + email
 + password
 + points
-+ attempts
 
 #### rounds
 + id
@@ -54,6 +53,10 @@ Add a session table for session management:
 + target_long
 + started_date
 + starter_id (users fk)
+
+#### round_attempts
++ user_id
++ round_id
 
 #### round_placements
 + place number
