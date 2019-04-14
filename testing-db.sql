@@ -34,13 +34,26 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: round_attempts; Type: TABLE; Schema: public; Owner: brian
+--
+
+CREATE TABLE public.round_attempts (
+    user_id integer,
+    round_id integer,
+    is_correct boolean
+);
+
+
+ALTER TABLE public.round_attempts OWNER TO brian;
+
+--
 -- Name: round_placements; Type: TABLE; Schema: public; Owner: brian
 --
 
 CREATE TABLE public.round_placements (
-    placement_number integer,
-    user_id integer NOT NULL,
-    round_id integer NOT NULL
+    placement_number integer NOT NULL,
+    round_id integer NOT NULL,
+    user_id integer
 );
 
 
@@ -83,6 +96,19 @@ ALTER TABLE public.rounds_id_seq OWNER TO brian;
 
 ALTER SEQUENCE public.rounds_id_seq OWNED BY public.rounds.id;
 
+
+--
+-- Name: session; Type: TABLE; Schema: public; Owner: brian
+--
+
+CREATE TABLE public.session (
+    sid character varying NOT NULL,
+    sess json NOT NULL,
+    expire timestamp(6) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.session OWNER TO brian;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: brian
@@ -137,50 +163,55 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
+-- Data for Name: round_attempts; Type: TABLE DATA; Schema: public; Owner: brian
+--
+
+INSERT INTO public.round_attempts VALUES (1, 4, false);
+
+
+--
 -- Data for Name: round_placements; Type: TABLE DATA; Schema: public; Owner: brian
 --
 
-COPY public.round_placements (placement_number, user_id, round_id) FROM stdin;
-1	2	1
-1	1	2
-1	2	3
-\.
 
 
 --
 -- Data for Name: rounds; Type: TABLE DATA; Schema: public; Owner: brian
 --
 
-COPY public.rounds (id, starter_id, datetime_started, target_url, target_latitude, target_longitude) FROM stdin;
-1	1	2019-03-21 14:58:00	\N	\N	\N
-2	2	2019-03-21 15:05:50	\N	\N	\N
-3	1	2019-03-21 15:07:18	\N	\N	\N
-\.
+INSERT INTO public.rounds VALUES (4, 1, '2019-04-10 02:18:33', 'myFile-1554862713782.jpeg', NULL, NULL);
+INSERT INTO public.rounds VALUES (5, 1, '2019-04-10 21:14:17', 'myFile-1554930857771.jpeg', NULL, NULL);
+INSERT INTO public.rounds VALUES (6, 1, '2019-04-10 22:03:35', 'myFile-1554933815374.jpeg', NULL, NULL);
+INSERT INTO public.rounds VALUES (7, 1, '2019-04-10 23:12:27', 'myFile-1554937947848.jpeg', NULL, NULL);
+INSERT INTO public.rounds VALUES (8, 1, '2019-04-10 23:23:19', 'myFile-1554938599381.jpeg', NULL, NULL);
+INSERT INTO public.rounds VALUES (9, 1, '2019-04-11 00:43:20', 'myFile-1554943400420.jpeg', NULL, NULL);
+
+
+--
+-- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: brian
+--
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: brian
 --
 
-COPY public.users (id, user_name, password_hash, email, points, attempts) FROM stdin;
-1	brian	$2b$10$lYzhcmu0uJZN9VMY3fy6y.dz/FzFKmpzWRjMlUDvzUWLiWDQ0zSya	b@g.com	\N	\N
-2	nick	$2b$10$lYzhcmu0uJZN9VMY3fy6y.dz/FzFKmpzWRjMlUDvzUWLiWDQ0zSya	n@g.com	\N	\N
-3   marlo    $2b$10$lYzhcmu0uJZN9VMY3fy6y.dz/FzFKmpzWRjMlUDvzUWLiWDQ0zSya    m@g.com \N  \N
-\.
+INSERT INTO public.users VALUES (1, 'brian', '$2b$10$lYzhcmu0uJZN9VMY3fy6y.dz/FzFKmpzWRjMlUDvzUWLiWDQ0zSya', 'b@g.com', NULL, NULL);
+INSERT INTO public.users VALUES (2, 'nick', '$2b$10$lYzhcmu0uJZN9VMY3fy6y.dz/FzFKmpzWRjMlUDvzUWLiWDQ0zSya', 'n@g.com', NULL, NULL);
 
 
 --
 -- Name: rounds_id_seq; Type: SEQUENCE SET; Schema: public; Owner: brian
 --
 
-SELECT pg_catalog.setval('public.rounds_id_seq', 3, true);
+SELECT pg_catalog.setval('public.rounds_id_seq', 9, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: brian
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 2, true);
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
 
 
 --
@@ -188,7 +219,7 @@ SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 --
 
 ALTER TABLE ONLY public.round_placements
-    ADD CONSTRAINT round_placements_pkey PRIMARY KEY (round_id, user_id);
+    ADD CONSTRAINT round_placements_pkey PRIMARY KEY (round_id, placement_number);
 
 
 --
@@ -197,6 +228,14 @@ ALTER TABLE ONLY public.round_placements
 
 ALTER TABLE ONLY public.rounds
     ADD CONSTRAINT rounds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: brian
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
 
 
 --
@@ -221,6 +260,22 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_user_name_key UNIQUE (user_name);
+
+
+--
+-- Name: round_attempts check_attempts_round_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: brian
+--
+
+ALTER TABLE ONLY public.round_attempts
+    ADD CONSTRAINT check_attempts_round_id_fkey FOREIGN KEY (round_id) REFERENCES public.rounds(id);
+
+
+--
+-- Name: round_attempts check_attempts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: brian
+--
+
+ALTER TABLE ONLY public.round_attempts
+    ADD CONSTRAINT check_attempts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

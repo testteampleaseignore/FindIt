@@ -5,9 +5,8 @@ Where we store the code for FindIt!
 #### PostgreSQL stuff
 
 - Enter a Postgres terminal and, if you don't already have a database, make one called "findit". If your named yours differently, that's OK. 
-- Enter the database with "\c findit" (or whatever you called it).
+- Enter the database with `\c findit` (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- Create a session table for session management. On linux: `cat node_modules/connect-pg-simple/table.sql > sudo -u <user> psql -d findit`. On macOS: `psql <user> -d findit < node_modules/connect-pg-simple/table.sql`.
 
 #### NodeJS stuff
 

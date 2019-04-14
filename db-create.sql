@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS rounds;
 DROP TABLE IF EXISTS round_attempts;
 DROP TABLE IF EXISTS round_placements;
+DROP TABLE IF EXISTS session;
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,       /* Unique identifier for each player (it's possible multiple 
@@ -39,3 +40,10 @@ CREATE TABLE IF NOT EXISTS round_placements (
     PRIMARY KEY (round_id, placement_number)
 );
 
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+  "sess" json NOT NULL,
+  "expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
