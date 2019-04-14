@@ -7,9 +7,7 @@ Where we store the code for FindIt!
 - Enter a Postgres terminal and, if you don't already have a database, make one called "findit". If your named yours differently, that's OK. 
 - Enter the database with "\c findit" (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- Copy db-config.json.example to db-config.json; a quick command for that is: `cp db-config.json{.example,}`.
-- Modify your new db-config.json file to match your PostgreSQL credentials: password, user, etc.
-- Create a session table for session management: ` cat node_modules/connect-pg-simple/table.sql > psql -U postgres -d findit`
+- Create a session table for session management. On linux: `cat node_modules/connect-pg-simple/table.sql > sudo -u <user> psql -d findit`. On macOS: `psql <user> -d findit < node_modules/connect-pg-simple/table.sql`.
 
 #### NodeJS stuff
 
@@ -19,9 +17,11 @@ Where we store the code for FindIt!
 #### General
 
 Initialize an environment variable config:
-`cp .env{.example,}`
-Add a session table for session management:
-`psql <user> < node_modules/connect-pg-simple/table.sql`
+
+    cp .env{.example,}
+
+After you've done that, edit the file you created (.env), changing 
+database credentials as specified by DATABASE_URL if necessary.
 
 ### Proposed Tasks Remaining 
 
