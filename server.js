@@ -70,6 +70,9 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
+const loggedInHome =  '/currentRound';
+const loggedOutHome = '/';
+
 function ensureLoggedInOrRedirect(req, res) {
 	// Check if the user is logged in or not
 	if (req.session && req.session.userID) {	
@@ -81,21 +84,22 @@ function ensureLoggedInOrRedirect(req, res) {
     }
 }
 
+
 app.get('/',function(req,res)
 {	
 	// If already logged in, redirect to current round page,
 	// which has all features of this page but more
 	if (req.session.userID) {
-		res.redirect('/currentRound');
+		res.redirect(loggedInHome);
 	} else {
 
 		var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
 
 		db.oneOrNone(target_stmt)
 		  .then(function(round){
-			res.render('pages/home', {
+			res.render('pages/loggedOutHome', {
 				target_url: round ? round.target_url : null,
-				my_title: "Home",
+				my_title: "FindIt!",
 				loggedIn: false
 			})
 		})
@@ -133,7 +137,7 @@ app.post('/login', function(req, res)
 				 console.log(`User logged in: ${result.id}`);
 				 req.session.userID = result.id;
 				 req.session.save(function(err) {
-				 	res.redirect('/currentRound');
+				 	res.redirect(loggedInHome);
 				 }); 
 				} else {
 				 // (3) On different failures, return the user to the 
@@ -158,7 +162,7 @@ app.get('/logout', function(req, res)
 {
 	req.session.userID = null;
 	req.session.save(function(err) {
-		res.redirect('/');
+		res.redirect(loggedOutHome);
 	});
 });
 
@@ -185,7 +189,7 @@ app.post('/register', function(req, res)
       	  req.session.userID = result.id;
       	  req.session.save(function(err) {
 			  // If everything looks good, send the now-logged-in user to the home page
-			  res.redirect('/currentRound');
+			  res.redirect(loggedInHome);
       	  });
 	  	}
 	  })
@@ -252,7 +256,7 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 	    
 	    db.oneOrNone(insert_round)
 		  .then(function(result) {
-		  	res.redirect('/currentRound');
+		  	res.redirect(loggedInHome);
 		  })
 		  .catch((result) => {
 		  	console.log(result);
