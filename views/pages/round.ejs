@@ -1,13 +1,10 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>      
 
-<body>
-<h2 class="title">Current Round</h2>
-
-<% if(round) { %>
+<h2 class="title">Round #<%= round.id %></h2>
 
 <div class="container image-container">
-  <img src='uploads/<%=round.target_url%>'>
+  <img src='../uploads/<%=round.target_url%>'>
 </div>
 <div class="container button-container">
   <button class="button" 
@@ -15,18 +12,5 @@
         Found It!
   </button>
 </div>
-
-<% } else { %>
-
-<div class="no-round jumbotron">
-	<h1>No rounds are currently going on!</h1>
-</div>
-
-<% } %>
-
-
-
-</body>
-</html>
 
 <% include ../partials/footer %>

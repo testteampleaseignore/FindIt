@@ -1,0 +1,39 @@
+<% include ../partials/header %>
+<% include ../partials/menu %>			
+
+<% if(roundsets) { %>
+	<h2 class="title">Rounds</h2>
+	<div class="rows">
+
+	<% roundsets.forEach(function (roundset) { %>
+	    <div class="row roundset">
+
+	    <% roundset.forEach(function(round) { %>
+
+	    	<% if(!round.fake) { %>
+	    		<a class="round-link" href="/rounds/<%= round.id %>"> 
+	    	<% } %>
+
+				<div class="round-model column card <%= round.fake ? 'fake' : '' %>">
+					<% if(!round.fake) { %>
+					<img src="../uploads/<%= round.target_url %>">
+					<% } %>
+				</div>
+
+			<% if(!round.fake) { %>
+				</a> 
+			<% } %>
+
+	    <% }); %>
+
+	    </div>
+	<% }); %>
+	</div>
+
+<% } else { %>
+<div class="no-round jumbotron">
+	<h1>No rounds are currently going on!</h1>
+</div>
+<% } %>
+				
+<% include ../partials/footer %>

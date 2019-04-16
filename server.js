@@ -41,7 +41,6 @@ var bcrypt = require('bcrypt');
 // support old use of db-config.json for now;
 // TODO: get rid of db-config.json because we can just use .env
 if(process.env.DATABASE_URL) {
-    console.log(process.env.DATABASE_URL);
     var db = pgp(process.env.DATABASE_URL);
 } else {
     var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
@@ -50,7 +49,9 @@ if(process.env.DATABASE_URL) {
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/')); //This line is necessary for us to use relative paths and access our resources directory
+//This line is necessary for us to use relative 
+// paths and access our resources directory
+app.use(express.static(__dirname + '/')); 
 
 // Create a session and initialize
 // a not-so-secret secret key
@@ -70,7 +71,7 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
-const loggedInHome =  '/currentRound';
+const loggedInHome =  '/dashboard';
 const loggedOutHome = '/';
 
 function ensureLoggedInOrRedirect(req, res) {
@@ -82,6 +83,24 @@ function ensureLoggedInOrRedirect(req, res) {
 		res.redirect('/login');
 		return false;
     }
+}
+
+function groupBySetsOfN(items, n) {
+	/* Take an array like this: [1, 2, 3, 4, 5, 6, 7],
+	   and return [[1, 2, 3], [4, 5, 6], [7]] */
+	let groups = [];
+	let currentGroup;
+	items.forEach(function(item, i) {
+		if (i % n === 0) {
+			currentGroup = [];
+		}
+		currentGroup.push(item);
+		if (i % n-1 === 2 || i === items.length-1) {
+			groups.push(currentGroup);
+		}
+
+	});
+	return groups;
 }
 
 
@@ -97,7 +116,7 @@ app.get('/',function(req,res)
 
 		db.oneOrNone(target_stmt)
 		  .then(function(round){
-			res.render('pages/loggedOutHome', {
+			res.render('pages/home', {
 				target_url: round ? round.target_url : null,
 				my_title: "FindIt!",
 				loggedIn: false
@@ -205,8 +224,8 @@ app.post('/register', function(req, res)
 });
 
 app.get('/profile', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
-	if(loggedin) {
+	var loggedIn = ensureLoggedInOrRedirect(req, res);
+	if(loggedIn) {
 		res.render('pages/playerProfilePage', {
 			my_title: 'Player Profile',
 			loggedIn: true
@@ -266,11 +285,12 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 	}
 })
 
-app.get('/currentRound', function(req, res) {
+app.get('/rounds/:roundId', function(req, res) {
 	
-	var loggedin = ensureLoggedInOrRedirect(req, res);
-	if(loggedin) {
-		var target_url =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
+	var loggedIn = ensureLoggedInOrRedirect(req, res);
+	console.log(loggedIn);
+	if(loggedIn) {
+		var target_url =  "SELECT target_url, id FROM rounds WHERE id=" + req.params.roundId + ';';
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
 	    	return task.batch([
@@ -282,17 +302,52 @@ app.get('/currentRound', function(req, res) {
 	      let round = results[0];
 	      let user = results[1];
 
-	      res.render('pages/currentRound',{
-	      	my_title: "Current Round",
-	        round: round ? round : null,
-	        name: user,
-	        loggedIn: true
-	      })
+	      if(round && user) {
+	      	res.render('pages/round', {
+		      	my_title: "Round #" + req.params.roundId,
+		        round: round,
+		        name: user,
+		        loggedIn: true
+	      	})
+	      } else {
+	      	console.log('No such round or user');
+	      	console.log(results);
+	      	res.redirect(loggedInHome);
+	      }
 		})
 		.catch(function(error) {
 		 	console.log(error);	  	
+		 	res.redirect(loggedInHome);
 		});	
 }	
+});
+
+app.get('/dashboard', function(req, res) {
+	var loggedin = ensureLoggedInOrRedirect(req, res);
+	if(loggedin) {
+		var target_url =  "SELECT target_url, id FROM rounds ORDER BY id DESC;";
+		db.any(target_url)
+			.then(function(results){
+				// Pad out the dashboard with some "fake" 
+				// rounds to make it look slightly nicer
+				while(results.length < 8) {
+					results.push({fake: true});
+				}
+				res.render('pages/dashboard', {
+					my_title: 'Dashboard',
+					loggedIn: true,
+					roundsets: groupBySetsOfN(results, 4)
+				});
+			})
+			.catch(function(results){
+				res.render('pages/dashboard', {
+					my_title: 'Dashboard',
+					loggedIn: true,
+					roundsets: null
+				});
+			});
+		
+	}
 });
 
 // TODO: Get rid of this route when it's appropriate

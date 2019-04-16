@@ -1,23 +1,12 @@
 
+/* General */
+
 body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
 .fa-anchor,.fa-coffee {font-size:200px}
 
-
 body {
 	background-color: white;
-}
-
-.no-round {
-  text-align: center;
-}
-.image-container {
-    text-align: center;
-}
-.image-container img {
-    max-width: 60%;
-    min-width: 40%;
-    max-height: 60%;
 }
 
 h2.title {
@@ -29,22 +18,62 @@ h2.title {
 
 #content {
   margin-top: 2em;
+  margin-left: 2em;
 }
 
-.w3-container {
-  padding:128px 16px  
-}
 
-.image-container {
+/* Dashboard */
+
+.no-round {
   text-align: center;
+}
+
+.rows {
+  margin-left: 5em;
+}
+
+.row.roundset {
+  margin-top: 2em;
+  margin-left: 5em;
+}
+
+.round-link {
+  width: 22%;
+}
+
+.round-model.card {
+  margin: 0;
+  text-align: center;
+  margin-right: 2em;
+  /* Magic */
+ /* display: flex;
+  align-items: center;  
+  justify-content: center;*/ 
+}
+.round-model.card.fake {
+  width: 19.8%;
+  height: 180px;
+  background-color: #eee;
+  border: none;
+}
+
+.round-model.card img {
+  height: 180px;
+  max-width: 100%;
 }
 
 .container {
   padding: 16px;
 }
 
+.w3-container {
+  padding:128px 16px  
+}
 
-.button{
+
+/* Round Page */
+
+.button {
   background-color: #4CAF50; /* Green */
   border: none;
   color: white;
@@ -55,4 +84,12 @@ h2.title {
   width: 100%;
   padding: 14px 20px;
   margin: 8px 0;
+}
+
+.image-container {
+  text-align: center;
+}
+.image-container img {
+  width: 60%;
+  height: 60%;
 }
