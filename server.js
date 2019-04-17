@@ -299,8 +299,8 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 	  	}
 	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 	    var insert_round = 'INSERT INTO rounds ' +
-	    '(starter_id, datetime_started, target_url, target_latitude, target_longitude) ' +
-	    `values (${req.session.userID}, '${date}', '${req.file.filename}', ${req.body.lat}, ${req.body.lng});`;	    
+	    '(starter_id, datetime_started, target_url) ' +
+	    `values (${req.session.userID}, '${date}', '${req.file.filename}');`;	    
 	    db.oneOrNone(insert_round)
 		  .then(function(result) {
 		  	res.redirect(loggedInHome);
@@ -335,7 +335,12 @@ app.get('/rounds/:roundId', function(req, res) {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round,
 		        name: user,
-		        loggedIn: true
+		        loggedIn: true,
+                keys: {
+			     googlemaps: process.env.GOOGLE_MAPS_API_KEY,
+			     pn_sub: process.env.PN_SUB_KEY, 
+			     pn_pub: process.env.PN_PUB_KEY
+                }
 	      	})
 	      } else {
 	      	console.log('No such round or user');
