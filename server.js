@@ -334,7 +334,7 @@ app.get('/rounds/:roundId', function(req, res) {
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round,
-		        name: user,
+		        name: user.user_name,
 		        loggedIn: true,
                 keys: {
 			     googlemaps: process.env.GOOGLE_MAPS_API_KEY,
