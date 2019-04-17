@@ -195,9 +195,16 @@ app.post('/register', function(req, res)
 app.get('/profile', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		res.render('pages/playerProfilePage', {
-			my_title: 'Player Profile',
-			loggedIn: true
+		var query = 'SELECT user_name FROM users WHERE id='+ req.session.userID +';';
+		var query = 'SELECT points FROM users WHERE id='+ req.session.userID +';';
+		db.any(query)
+		.then(function(user_info)
+		{
+			res.render('pages/playerProfilePage', {
+				my_title: 'Player Profile',
+				loggedIn: true,
+				data: user_info
+			});
 		});
 	}
 });
