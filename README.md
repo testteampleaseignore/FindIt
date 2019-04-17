@@ -5,11 +5,8 @@ Where we store the code for FindIt!
 #### PostgreSQL stuff
 
 - Enter a Postgres terminal and, if you don't already have a database, make one called "findit". If your named yours differently, that's OK. 
-- Enter the database with "\c findit" (or whatever you called it).
+- Enter the database with `\c findit` (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
-- Copy db-config.json.example to db-config.json; a quick command for that is: `cp db-config.json{.example,}`.
-- Modify your new db-config.json file to match your PostgreSQL credentials: password, user, etc.
-- Create a session table for session management: ` cat node_modules/connect-pg-simple/table.sql > psql -U postgres -d findit`
 
 #### NodeJS stuff
 
@@ -19,7 +16,11 @@ Where we store the code for FindIt!
 #### General
 
 Initialize an environment variable config:
-`cp .env{.example,}`
+
+    cp .env{.example,}
+
+After you've done that, edit the file you created (.env), changing 
+database credentials as specified by DATABASE_URL if necessary.
 
 ### Proposed Tasks Remaining 
 
@@ -43,7 +44,6 @@ Initialize an environment variable config:
 + email
 + password
 + points
-+ attempts
 
 #### rounds
 + id
@@ -52,6 +52,10 @@ Initialize an environment variable config:
 + target_long
 + started_date
 + starter_id (users fk)
+
+#### round_attempts
++ user_id
++ round_id
 
 #### round_placements
 + place number
