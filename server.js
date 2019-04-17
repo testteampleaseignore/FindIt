@@ -297,7 +297,7 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 		  .catch((result) => {
 		  	console.log(result);
 		    console.log(result.message);
-	        res.redirect('/upload');
+	        res.redirect(loggedInHome);
 		  });
 	}
 })
