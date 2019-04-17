@@ -254,9 +254,20 @@ app.get('/profile', function(req, res) {
 app.get('/leaderboard', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		res.render('pages/Leaderboard', {
-			my_title: 'Leaderboard',
-			loggedIn: true
+		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
+		' FROM users';
+		db.any(query)
+		.then(function(user_info)
+		{
+			res.render('pages/Leaderboard', {
+				my_title: 'Leaderboard',
+				loggedIn: true,
+				data: user_info
+			});
+		})
+		.catch(function(results)
+		{
+			console.log('You messed up');
 		});
 	}
 });
