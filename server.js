@@ -299,9 +299,8 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 	  	}
 	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 	    var insert_round = 'INSERT INTO rounds ' +
-	    '(starter_id, datetime_started, target_url) ' +
-	    `values (${req.session.userID}, '${date}', '${req.file.filename}')`;
-	    
+	    '(starter_id, datetime_started, target_url, target_latitude, target_longitude) ' +
+	    `values (${req.session.userID}, '${date}', '${req.file.filename}', ${req.body.lat}, ${req.body.lng});`;	    
 	    db.oneOrNone(insert_round)
 		  .then(function(result) {
 		  	res.redirect(loggedInHome);
@@ -309,7 +308,7 @@ app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
 		  .catch((result) => {
 		  	console.log(result);
 		    console.log(result.message);
-	        res.redirect('/upload');
+	        res.redirect(loggedInHome);
 		  });
 	}
 })
@@ -319,11 +318,11 @@ app.get('/rounds/:roundId', function(req, res) {
 	var loggedIn = ensureLoggedInOrRedirect(req, res);
 	console.log(loggedIn);
 	if(loggedIn) {
-		var target_url =  "SELECT target_url, id FROM rounds WHERE id=" + req.params.roundId + ';';
+		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
 	    	return task.batch([
-	            task.oneOrNone(target_url),
+	            task.oneOrNone(round_stmt),
 	            task.one(user_name)
 	        ]);
 		})
