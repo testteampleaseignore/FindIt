@@ -226,9 +226,16 @@ app.post('/register', function(req, res)
 app.get('/profile', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		var query = 'SELECT user_name FROM users WHERE id='+ req.session.userID +';';
-		var query = 'SELECT points FROM users WHERE id='+ req.session.userID +';';
+		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
+		' FROM users WHERE id='+ req.session.userID +';';
+		//var query1 = 'SELECT points FROM users WHERE id='+ req.session.userID +';';
 		db.any(query)
+		/*db.task('get-everything', task => {
+	    	return task.batch([
+	            task.one(query),
+	            task.one(query1)
+	        ]);
+		})*/
 		.then(function(user_info)
 		{
 			res.render('pages/playerProfilePage', {
@@ -236,6 +243,10 @@ app.get('/profile', function(req, res) {
 				loggedIn: true,
 				data: user_info
 			});
+		})
+		.catch(function(results)
+		{
+			console.log('You messed up');
 		});
 	}
 });
