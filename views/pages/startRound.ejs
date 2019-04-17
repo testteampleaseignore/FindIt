@@ -78,8 +78,9 @@
     }, 5000);
         
     function updateFormLocation(){
-        document.getElementById("lat").innterHTML = window.lat;
-        document.getElementById("lng").innterHTML = window.lng;
+        document.getElementById("lat").value = window.lat;
+        document.getElementById("lng").value = window.lng;
+        return false;
     }
     </script>
 
