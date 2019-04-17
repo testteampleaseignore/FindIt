@@ -7,17 +7,17 @@
 
 <table>
   <tr>
-    <th>Name</th>
-    <td> </td>
+    <th>Username</th>
+    <td><%=data[0].user_name%> </td>
     
   </tr>
   <tr>
     <th>Score</th>
-    <td></td>
+    <td><%=data[0].points ? data[0].points : 0 %></td>
   </tr>
   <tr>
-  	<th>Place</th>
-  	<td></td>
+  	<th>Ranking</th>
+  	<td><%=data[0].row_number ? data[0].row_number : 1 %></td>
   </tr>
 
 </table>
