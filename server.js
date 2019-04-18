@@ -276,10 +276,8 @@ app.post('/uploadTarget', function(req, res) {
 
 app.get('/rounds/:roundId', function(req, res) {
 	
-	console.log('wwwwwwwww')
 	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
-		console.log('hello');
 		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
@@ -292,9 +290,7 @@ app.get('/rounds/:roundId', function(req, res) {
 	      let round = results[0];
 	      let user = results[1];
 
-	      console.log('hello')
 	      if(round && user && utils.roundHasLocalTarget(round)) {
-	      	console.log('what?')
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round,
