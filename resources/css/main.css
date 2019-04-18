@@ -93,3 +93,11 @@ h2.title {
   width: 60%;
   height: 60%;
 }
+
+.map-container {
+    text-align: center;
+}
+
+#map-canvas {
+    margin: auto;
+}

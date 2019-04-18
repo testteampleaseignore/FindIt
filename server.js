@@ -247,9 +247,20 @@ app.get('/profile', function (req, res) {
 app.get('/leaderboard', function(req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		res.render('pages/Leaderboard', {
-			my_title: 'Leaderboard',
-			loggedIn: true
+		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
+		' FROM users';
+		db.any(query)
+		.then(function(user_info)
+		{
+			res.render('pages/Leaderboard', {
+				my_title: 'Leaderboard',
+				loggedIn: true,
+				data: user_info
+			});
+		})
+		.catch(function(results)
+		{
+			console.log('You messed up');
 		});
 	}
 });
@@ -341,8 +352,13 @@ app.get('/rounds/:roundId', function(req, res) {
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round,
-		        name: user,
-		        loggedIn: true
+		        name: user.user_name,
+		        loggedIn: true,
+                keys: {
+			     googlemaps: process.env.GOOGLE_MAPS_API_KEY,
+			     pn_sub: process.env.PN_SUB_KEY, 
+			     pn_pub: process.env.PN_PUB_KEY
+                }
 	      	})
 	      } else {
 	      	console.log('No such round or user');
