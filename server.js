@@ -379,10 +379,19 @@ app.get('/dashboard', function(req, res) {
 		var target_url =  "SELECT target_url, id FROM rounds ORDER BY id DESC;";
 		db.any(target_url)
 			.then(function(results){
+
+				// Don't display rounds for which the targets are "stale",
+				// i.e. their file does not exist in the filesystem 
+				results = results.filter(function(result) {
+					return fs.existsSync(path.join(__dirname, 'uploads', result.target_url));
+				});
+
 				// Pad out the dashboard with some "fake" 
 				// rounds to make it look slightly nicer
-				while(results.length < 8) {
-					results.push({fake: true});
+				if(results.length > 0) {
+					while(results.length < 8) {
+						results.push({fake: true});
+					}
 				}
 				res.render('pages/dashboard', {
 					my_title: 'Dashboard',
@@ -390,7 +399,8 @@ app.get('/dashboard', function(req, res) {
 					roundsets: groupBySetsOfN(results, 4)
 				});
 			})
-			.catch(function(results){
+			.catch(function(error){
+				console.log(error)
 				res.render('pages/dashboard', {
 					my_title: 'Dashboard',
 					loggedIn: true,
