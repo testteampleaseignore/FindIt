@@ -18,11 +18,14 @@ h2.title {
 
 #content {
   margin-top: 2em;
-  margin-left: 2em;
 }
 
 
 /* Dashboard */
+
+header.w3-container {
+  padding: 128px 16px;
+}
 
 .no-round {
   text-align: center;

@@ -1,6 +1,13 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>			
 
+
+<% if(!loggedIn) { %> 
+<header class="w3-container w3-red w3-center">
+  <h1 class="w3-margin w3-jumbo">FIND IT</h1>
+</header>
+<% } %>
+
 <% if(roundsets.length > 0) { %>
 	<h2 class="title">Rounds</h2>
 	<div class="rows">

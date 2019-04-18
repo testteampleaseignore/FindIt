@@ -56,8 +56,6 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
-const loggedInHome =  '/dashboard';
-const loggedOutHome = '/';
 
 function ensureLoggedInOrRedirect(req, res) {
 	// Check if the user is logged in or not
@@ -97,30 +95,9 @@ function generateUniqueSecureFilename(filename) {
 }
 
 
-app.get('/',function(req,res)
-{	
-	// If already logged in, redirect to current round page,
-	// which has all features of this page but more
-	if (req.session.userID) {
-		res.redirect(loggedInHome);
-	} else {
-
-		var target_stmt =  "SELECT target_url FROM rounds ORDER BY id DESC limit 1;"
-
-		db.oneOrNone(target_stmt)
-		  .then(function(round){
-			res.render('pages/home', {
-				target_url: round ? round.target_url : null,
-				my_title: "FindIt!",
-				loggedIn: false
-			})
-		})
-		.catch(function(error) {
-			console.log(error);
-	  	});	
-	}
-
-});
+app.get('/', function(req, res) {
+	res.redirect('/dashboard');
+})
 
 app.get('/login', function(req, res)
 {
@@ -149,7 +126,7 @@ app.post('/login', function(req, res)
 				 console.log(`User logged in: ${result.id}`);
 				 req.session.userID = result.id;
 				 req.session.save(function(err) {
-				 	res.redirect(loggedInHome);
+				 	res.redirect('/dashboard');
 				 }); 
 				} else {
 				 // (3) On different failures, return the user to the 
@@ -174,7 +151,7 @@ app.get('/logout', function(req, res)
 {
 	req.session.userID = null;
 	req.session.save(function(err) {
-		res.redirect(loggedOutHome);
+		res.redirect('/dashboard');
 	});
 });
 
@@ -201,7 +178,7 @@ app.post('/register', function(req, res)
       	  req.session.userID = result.id;
       	  req.session.save(function(err) {
 			  // If everything looks good, send the now-logged-in user to the home page
-			  res.redirect(loggedInHome);
+			  res.redirect('/dashboard');
       	  });
 	  	}
 	  })
@@ -320,12 +297,12 @@ app.post('/uploadTarget', function(req, res) {
 		    // run the query!   
 		    db.oneOrNone(insert_round)
 			  .then(function(result) {
-			  	res.redirect(loggedInHome);
+			  	res.redirect('/dashboard');
 			  })
 			  .catch((result) => {
 			  	console.log(`sql: ${insert_round}`);
 			  	console.log(`result: ${result}`);
-		        res.redirect(loggedInHome);
+		        res.redirect('/dashboard');
 			  });
 		});
 	}
@@ -363,52 +340,51 @@ app.get('/rounds/:roundId', function(req, res) {
 	      } else {
 	      	console.log('No such round or user');
 	      	console.log(results);
-	      	res.redirect(loggedInHome);
+	      	res.redirect('/dashboard');
 	      }
 		})
 		.catch(function(error) {
 		 	console.log(error);	  	
-		 	res.redirect(loggedInHome);
+		 	res.redirect('/dashboard');
 		});	
 }	
 });
 
 app.get('/dashboard', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
-	if(loggedin) {
-		var target_url =  "SELECT target_url, id FROM rounds ORDER BY id DESC;";
-		db.any(target_url)
-			.then(function(results){
+	let loggedIn = req.session.userID == false;
+	console.log(loggedIn);
+	console.log(req.session);
+	var target_url =  "SELECT target_url, id FROM rounds ORDER BY id DESC;";
+	db.any(target_url)
+		.then(function(results){
 
-				// Don't display rounds for which the targets are "stale",
-				// i.e. their file does not exist in the filesystem 
-				results = results.filter(function(result) {
-					return fs.existsSync(path.join(__dirname, 'uploads', result.target_url));
-				});
-
-				// Pad out the dashboard with some "fake" 
-				// rounds to make it look slightly nicer
-				if(results.length > 0) {
-					while(results.length < 8) {
-						results.push({fake: true});
-					}
-				}
-				res.render('pages/dashboard', {
-					my_title: 'Dashboard',
-					loggedIn: true,
-					roundsets: groupBySetsOfN(results, 4)
-				});
-			})
-			.catch(function(error){
-				console.log(error)
-				res.render('pages/dashboard', {
-					my_title: 'Dashboard',
-					loggedIn: true,
-					roundsets: null
-				});
+			// Don't display rounds for which the targets are "stale",
+			// i.e. their file does not exist in the filesystem 
+			results = results.filter(function(result) {
+				return fs.existsSync(path.join(__dirname, 'uploads', result.target_url));
 			});
-		
-	}
+
+			// Pad out the dashboard with some "fake" 
+			// rounds to make it look slightly nicer
+			if(results.length > 0) {
+				while(results.length < 8) {
+					results.push({fake: true});
+				}
+			}
+			res.render('pages/dashboard', {
+				my_title: 'FindIt!',
+				loggedIn: loggedIn,
+				roundsets: groupBySetsOfN(results, 4)
+			});
+		})
+		.catch(function(error){
+			console.log(error);
+			res.render('pages/dashboard', {
+				my_title: 'FindIt!',
+				loggedIn: loggedIn,
+				roundsets: []
+			});
+		});
 });
 
 
