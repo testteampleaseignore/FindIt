@@ -60,7 +60,7 @@ function isLoggedIn(req) {
 	return (req.session && req.session.userID);
 }
 
-function ensureLoggedInOrRedirect(req) {
+function ensureLoggedInOrRedirect(req, res) {
 	// Check if the user is logged in or not
 	if (isLoggedIn(req)) {	
 		return true;
@@ -95,6 +95,19 @@ function generateUniqueSecureFilename(filename) {
 	let secureFilenameNoExt = path.basename(secureFilename, fileExt);
 	return uniqueFilename(
 		'', secureFilenameNoExt) + fileExt.toLowerCase();
+}
+
+function roundHasLocalTarget(round) {
+	if(round) {
+		expectedPath = path.join(
+			__dirname, 'uploads', round.target_url);
+		console.log(expectedPath);
+		exists = fs.existsSync(expectedPath);
+		console.log(exists);
+		return exists;
+	} else {
+		return false;
+	}
 }
 
 
@@ -202,7 +215,7 @@ app.post('/register', function(req, res)
 });
 
 app.get('/profile', function (req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users WHERE id='+ req.session.userID +';';
@@ -230,7 +243,7 @@ app.get('/profile', function (req, res) {
 });
 
 app.get('/leaderboard', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users';
@@ -251,7 +264,7 @@ app.get('/leaderboard', function(req, res) {
 });
 
 app.get('/startRound', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req);
+	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/startRound', {
 			my_title: 'Start Round',
@@ -267,7 +280,7 @@ app.get('/startRound', function(req, res) {
 
 app.post('/uploadTarget', function(req, res) {
 
-	loggedIn = ensureLoggedInOrRedirect(req);
+	loggedIn = ensureLoggedInOrRedirect(req, res);
 	if (loggedIn) {
 
 		var form = {}
@@ -315,8 +328,10 @@ app.post('/uploadTarget', function(req, res) {
 
 app.get('/rounds/:roundId', function(req, res) {
 	
-	var loggedIn = ensureLoggedInOrRedirect(req);
+	console.log('wwwwwwwww')
+	var loggedIn = ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
+		console.log('hello');
 		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
 		db.task('get-everything', task => {
@@ -329,20 +344,22 @@ app.get('/rounds/:roundId', function(req, res) {
 	      let round = results[0];
 	      let user = results[1];
 
-	      if(round && user) {
+	      console.log('hello')
+	      if(round && user && roundHasLocalTarget(round)) {
+	      	console.log('what?')
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round,
 		        name: user.user_name,
 		        loggedIn: true,
                 keys: {
-			     googlemaps: process.env.GOOGLE_MAPS_API_KEY,
-			     pn_sub: process.env.PN_SUB_KEY, 
-			     pn_pub: process.env.PN_PUB_KEY
+				    googlemaps: process.env.GOOGLE_MAPS_API_KEY,
+				    pn_sub: process.env.PN_SUB_KEY, 
+				    pn_pub: process.env.PN_PUB_KEY
                 }
 	      	})
 	      } else {
-	      	console.log('No such round or user');
+	      	console.log('No such user, round, or invalid round');
 	      	console.log(results);
 	      	res.redirect('/dashboard');
 	      }
@@ -362,9 +379,7 @@ app.get('/dashboard', function(req, res) {
 
 			// Don't display rounds for which the targets are "stale",
 			// i.e. their file does not exist in the filesystem 
-			results = results.filter(function(result) {
-				return fs.existsSync(path.join(__dirname, 'uploads', result.target_url));
-			});
+			results = results.filter(roundHasLocalTarget);
 
 			// Pad out the dashboard with some "fake" 
 			// rounds to make it look slightly nicer
