@@ -8,11 +8,11 @@
 <br>
 
 <form action="/uploadTarget" enctype="multipart/form-data" method="POST" onsubmit="updateFormLocation()"> 
-   <input type="file" accept="image/*" capture name="myFile" onchange="previewFile()"/>
+   <input type="file" accept="image/*" name="myFile" onchange="previewFile()" capture/>
    <img src="" height="200" alt="Image preview...">
    <input id="subbutton" type="submit" value="Submit" disabled/>
-   <input type="hidden" id="lat" value=""/>
-   <input type="hidden" id="lng" value=""/>
+   <input type="hidden" id="lat" name="lat" value="abc"/>
+   <input type="hidden" id="lng" name="lng" value="def"/>
 </form>
 
 <div class="container">
@@ -78,6 +78,7 @@
     }, 5000);
         
     function updateFormLocation(){
+        console.log('submitted!');
         document.getElementById("lat").value = window.lat;
         document.getElementById("lng").value = window.lng;
         return false;

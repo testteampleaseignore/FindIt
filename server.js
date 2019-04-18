@@ -1,41 +1,41 @@
 #!/usr/bin/env node
 
-/***********************
-  Load Components!
 
-  Express      - A Node.js Framework
-  Body-Parser  - A tool to help use parse the data in a post request
-  Pg-Promise   - A database tool to help use connect to our PostgreSQL database
-***********************/
-var express = require('express'); //Ensure our express framework has been added
-var app = express();
-var bodyParser = require('body-parser'); //Ensure our body-parser tool has been added
-var fs = require('fs');
+// load stdlibs
+const fs = require('fs');
+const path = require('path');
 
-app.use(bodyParser.json());              // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-const multer = require('multer'); //multer
+// load external libs
+const express = require('express');
+const dotenv = require('dotenv');
+const pgp = require('pg-promise')();
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+const bcrypt = require('bcrypt');
+const busboy = require('connect-busboy');
+const filenamify = require('filenamify');
+const uniqueFilename = require('unique-filename')
 
-// Setup uploads
-var storage = multer.diskStorage({
-  destination: 'uploads',
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + '.jpeg')
-  }
-});
-
-var upload = multer({ storage: storage })
 
 // load .env config file
-const dotenv = require('dotenv');
 dotenv.config();
 
-//Create Database Connection
-var pgp = require('pg-promise')();
-var session = require('express-session');
-var pgSession = require('connect-pg-simple')(session);
-
-var bcrypt = require('bcrypt');
+// make an app
+var app = express();
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+//This line is necessary for us to use relative 
+// paths and access our resources directory
+app.use(express.static(__dirname + '/')); 
+// Create a session and initialize
+// a not-so-secret secret key
+app.use(session({
+	secret: process.env.SECRET || 'whisper', 
+	saveUninitialized: true,
+	resave: true,
+	store: new pgSession({pgPromise: db})
+}));
+app.use(busboy({immediate: true }));
 
 // get db & its configuration...
 // support old use of db-config.json for now;
@@ -46,21 +46,6 @@ if(process.env.DATABASE_URL) {
     var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
     var db = pgp(dbConfig);
 }
-
-// set the view engine to ejs
-app.set('view engine', 'ejs');
-//This line is necessary for us to use relative 
-// paths and access our resources directory
-app.use(express.static(__dirname + '/')); 
-
-// Create a session and initialize
-// a not-so-secret secret key
-app.use(session({
-	secret: 'whisper', 
-	saveUninitialized: true,
-	resave: true,
-	store: new pgSession({pgPromise: db})
-}));
 
 // One way we could handle score upload logic
 var PLACEMENTS_TO_POINTS = {
@@ -101,6 +86,14 @@ function groupBySetsOfN(items, n) {
 
 	});
 	return groups;
+}
+
+function generateUniqueSecureFilename(filename) {
+	let secureFilename = filenamify(filename, {replacement: '-'}); 
+	let fileExt = path.extname(secureFilename);
+	let secureFilenameNoExt = path.basename(secureFilename, fileExt);
+	return uniqueFilename(
+		'', secureFilenameNoExt) + fileExt.toLowerCase();
 }
 
 
@@ -223,7 +216,7 @@ app.post('/register', function(req, res)
 	  })
 });
 
-app.get('/profile', function(req, res) {
+app.get('/profile', function (req, res) {
 	var loggedin = ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
@@ -276,29 +269,54 @@ app.get('/startRound', function(req, res) {
 	}
 });
 
-app.post('/uploadTarget', upload.single('myFile'), function(req, res, next) {
+app.post('/uploadTarget', function(req, res) {
 
 	loggedIn = ensureLoggedInOrRedirect(req, res);
 	if (loggedIn) {
-		const file = req.file
-	  	if (!file) {
-	    	const error = new Error('Please upload a file')
-	    	error.httpStatusCode = 400
-	    	return next(error)
-	  	}
-	    var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-	    var insert_round = 'INSERT INTO rounds ' +
-	    '(starter_id, datetime_started, target_url, target_latitude, target_longitude) ' +
-	    `values (${req.session.userID}, '${date}', '${req.file.filename}', ${req.body.lat}, ${req.body.lng});`;	    
-	    db.oneOrNone(insert_round)
-		  .then(function(result) {
-		  	res.redirect(loggedInHome);
-		  })
-		  .catch((result) => {
-		  	console.log(result);
-		    console.log(result.message);
-	        res.redirect(loggedInHome);
-		  });
+
+		var lat, lng, filename;
+		req.busboy.on('field', function(key, value) {
+			if(key === 'lat') {
+				lat = value;
+			}
+			if(key === 'lng') {
+				lng = value;
+			}
+		});
+		req.busboy.on('file', function(fieldname, file, filename) {
+
+			// save the file to the filesystem
+			console.log(`Received file: ${filename}`);
+			filename = generateUniqueSecureFilename(filename);
+			let filepath = path.join(__dirname, 'uploads', filename)
+			console.log(`Saving the received file at: ${filepath}`);
+	        let fstream = fs.createWriteStream(filepath);
+	        file.pipe(fstream);
+	        fstream.on('close', function () {
+	            console.log('File saved.');
+	        });
+
+	        
+		});
+		req.busboy.on('finish', function() {
+			// construct a SQL query to insert a round / target
+            var date = new Date().toISOString()
+         			.replace(/T/, ' ').replace(/\..+/, '');
+		    var insert_round = 'INSERT INTO rounds ' +
+		    '(starter_id, datetime_started, target_url, target_latitude, target_longitude) ' +
+		    `values (${req.session.userID}, '${date}', '${filename}', ${lat}, ${lng});`;	 
+
+		    // run the query!   
+		    db.oneOrNone(insert_round)
+			  .then(function(result) {
+			  	res.redirect(loggedInHome);
+			  })
+			  .catch((result) => {
+			  	console.log(`sql: ${insert_round}`);
+			  	console.log(`result: ${result}`);
+		        res.redirect(loggedInHome);
+			  });
+		});
 	}
 })
 

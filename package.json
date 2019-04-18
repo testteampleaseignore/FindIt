@@ -3,15 +3,16 @@
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^3.0.4",
+    "connect-busboy": "0.0.2",
     "connect-pg-simple": "^5.0.0",
     "dotenv": "^7.0.0",
     "ejs": "^2.5.5",
     "ejs-lint": "^0.3.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
-    "multer": "^1.4.1",
     "npm": "^6.9.0",
-    "pg-promise": "^8.5.1"
+    "pg-promise": "^8.5.1",
+    "unique-filename": "^1.1.1"
   },
   "scripts": {
     "watch": "nodemon server.js"
