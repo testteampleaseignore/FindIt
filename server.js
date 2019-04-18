@@ -56,10 +56,13 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
+function isLoggedIn(req) {
+	return (req.session && req.session.userID);
+}
 
-function ensureLoggedInOrRedirect(req, res) {
+function ensureLoggedInOrRedirect(req) {
 	// Check if the user is logged in or not
-	if (req.session && req.session.userID) {	
+	if (isLoggedIn(req)) {	
 		return true;
 	} else {
         // If not, make them login
@@ -104,46 +107,51 @@ app.get('/login', function(req, res)
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
 		my_title: 'Login',
-		loggedIn: req.session.userID == false
+		loggedIn: isLoggedIn(req)
 	});
 });
 
 app.post('/login', function(req, res)
 {
-	var body = req.body;
+	var form = {}; 
+	req.busboy.on('field', function(key, value) {
+		form[key] = value;
+	});
+	req.busboy.on('finish', function() {
 
-	// Validate the user's submitted login form by
-	// (1) Checking if the hash of the submitted password 
-	//   matches the one we have stored in our database,
-	// SQLQ uery to get user_name and password_hash from users table
-	var check_login =" SELECT id, password_hash FROM users WHERE user_name='"+ body.username+"';"
-	db.oneOrNone(check_login)
-		.then(function(result) {
-			// (2) On success, redirect to the homepage
-			if(result) {
-				if(bcrypt.compareSync(body.password, result.password_hash)) {
-				 // Passwords match
-				 console.log(`User logged in: ${result.id}`);
-				 req.session.userID = result.id;
-				 req.session.save(function(err) {
-				 	res.redirect('/dashboard');
-				 }); 
+		// Validate the user's submitted login form by
+		// (1) Checking if the hash of the submitted password 
+		//   matches the one we have stored in our database,
+		// SQLQ uery to get user_name and password_hash from users table
+		var check_login = "SELECT id, password_hash FROM users WHERE user_name='" + 
+			form.username + "';"
+		db.oneOrNone(check_login)
+			.then(function(result) {
+				// (2) On success, redirect to the homepage
+				if(result) {
+					if(bcrypt.compareSync(form.password, result.password_hash)) {
+					 // Passwords match
+					 console.log(`User logged in: ${result.id}`);
+					 req.session.userID = result.id;
+					 req.session.save(function(err) {
+					 	res.redirect('/dashboard');
+					 }); 
+					} else {
+					 // (3) On different failures, return the user to the 
+					 // login page and display a new error message explaining 
+					 // what happened
+					 // Passwords don't match
+					 res.redirect('/login'); 
+					}
 				} else {
-				 // (3) On different failures, return the user to the 
-				 // login page and display a new error message explaining 
-				 // what happened
-				 // Passwords don't match
-				 res.redirect('/login'); 
+					// Username was not found
+					res.redirect('/login');
 				}
-			} else {
-				// Username was not found
-				res.redirect('/login');
-			}
-		})
-		.catch(function(result) {
-		    console.log(result);
-	  	});	
-
+			})
+			.catch(function(result) {
+			    console.log(result);
+		  	});	
+	});
 });
 
 
@@ -160,7 +168,7 @@ app.get('/register', function(req, res)
 	res.render('pages/registrationPage', {
 		my_title: 'Register',
 		error: req.query.error,
-		loggedIn: req.session.userID == false
+		loggedIn: isLoggedIn(req)
 	});
 });
 
@@ -194,7 +202,7 @@ app.post('/register', function(req, res)
 });
 
 app.get('/profile', function (req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users WHERE id='+ req.session.userID +';';
@@ -222,7 +230,7 @@ app.get('/profile', function (req, res) {
 });
 
 app.get('/leaderboard', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users';
@@ -243,7 +251,7 @@ app.get('/leaderboard', function(req, res) {
 });
 
 app.get('/startRound', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = ensureLoggedInOrRedirect(req);
 	if(loggedin) {
 		res.render('pages/startRound', {
 			my_title: 'Start Round',
@@ -259,24 +267,19 @@ app.get('/startRound', function(req, res) {
 
 app.post('/uploadTarget', function(req, res) {
 
-	loggedIn = ensureLoggedInOrRedirect(req, res);
+	loggedIn = ensureLoggedInOrRedirect(req);
 	if (loggedIn) {
 
-		var lat, lng, filename;
+		var form = {}
 		req.busboy.on('field', function(key, value) {
-			if(key === 'lat') {
-				lat = value;
-			}
-			if(key === 'lng') {
-				lng = value;
-			}
+			form[key] = value;
 		});
 		req.busboy.on('file', function(fieldname, file, filename) {
 
 			// save the file to the filesystem
 			console.log(`Received file: ${filename}`);
-			filename = generateUniqueSecureFilename(filename);
-			let filepath = path.join(__dirname, 'uploads', filename)
+			form['filename'] = generateUniqueSecureFilename(filename);
+			let filepath = path.join(__dirname, 'uploads', form['filename'])
 			console.log(`Saving the received file at: ${filepath}`);
 	        let fstream = fs.createWriteStream(filepath);
 	        file.pipe(fstream);
@@ -291,8 +294,10 @@ app.post('/uploadTarget', function(req, res) {
             var date = new Date().toISOString()
          			.replace(/T/, ' ').replace(/\..+/, '');
 		    var insert_round = 'INSERT INTO rounds ' +
-		    '(starter_id, datetime_started, target_url, target_latitude, target_longitude) ' +
-		    `values (${req.session.userID}, '${date}', '${filename}', ${lat}, ${lng});`;	 
+		    '(starter_id, datetime_started, target_url, ' + 
+		    'target_latitude, target_longitude) ' +
+		    `values (${req.session.userID}, '${date}', ` +
+		    `'${form['filename']}', ${form['lat']}, ${form['lat']});`;	 
 
 		    // run the query!   
 		    db.oneOrNone(insert_round)
@@ -310,8 +315,7 @@ app.post('/uploadTarget', function(req, res) {
 
 app.get('/rounds/:roundId', function(req, res) {
 	
-	var loggedIn = ensureLoggedInOrRedirect(req, res);
-	console.log(loggedIn);
+	var loggedIn = ensureLoggedInOrRedirect(req);
 	if(loggedIn) {
 		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
 		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
@@ -347,14 +351,12 @@ app.get('/rounds/:roundId', function(req, res) {
 		 	console.log(error);	  	
 		 	res.redirect('/dashboard');
 		});	
-}	
+	}	
 });
 
 app.get('/dashboard', function(req, res) {
-	let loggedIn = req.session.userID == false;
-	console.log(loggedIn);
-	console.log(req.session);
-	var target_url =  "SELECT target_url, id FROM rounds ORDER BY id DESC;";
+	var target_url = "SELECT target_url, id FROM rounds ORDER BY id DESC;";
+	var loggedIn = isLoggedIn(req);
 	db.any(target_url)
 		.then(function(results){
 
