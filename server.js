@@ -401,18 +401,6 @@ app.get('/dashboard', function(req, res) {
 	}
 });
 
-// TODO: Get rid of this route when it's appropriate
-app.get('/whereami', function(req, res) {
-	res.render('pages/whereami', {
-		my_title: 'Where Am I?',
-		loggedIn: false,
-		keys: {
-			googlemaps: process.env.GOOGLE_MAPS_API_KEY,
-			pn_sub: process.env.PN_SUB_KEY, 
-			pn_pub: process.env.PN_PUB_KEY
-		}
-	});
-});
 
 app.listen(process.env.PORT);
 console.log(`${process.env.PORT} is the magic port`);
