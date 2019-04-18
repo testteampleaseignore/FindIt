@@ -16,6 +16,8 @@ const busboy = require('connect-busboy');
 const filenamify = require('filenamify');
 const uniqueFilename = require('unique-filename')
 
+// load other files 
+const utils = require('./utils.js')
 
 // load .env config file
 dotenv.config();
@@ -56,57 +58,6 @@ var PLACEMENTS_TO_POINTS = {
 	5: 1	
 }
 
-function isLoggedIn(req) {
-	return (req.session && req.session.userID);
-}
-
-function ensureLoggedInOrRedirect(req, res) {
-	// Check if the user is logged in or not
-	if (isLoggedIn(req)) {	
-		return true;
-	} else {
-        // If not, make them login
-		res.redirect('/login');
-		return false;
-    }
-}
-
-function groupBySetsOfN(items, n) {
-	/* Take an array like this: [1, 2, 3, 4, 5, 6, 7],
-	   and return [[1, 2, 3], [4, 5, 6], [7]] */
-	let groups = [];
-	let currentGroup;
-	items.forEach(function(item, i) {
-		if (i % n === 0) {
-			currentGroup = [];
-		}
-		currentGroup.push(item);
-		if (i % n-1 === 2 || i === items.length-1) {
-			groups.push(currentGroup);
-		}
-
-	});
-	return groups;
-}
-
-function generateUniqueSecureFilename(filename) {
-	let secureFilename = filenamify(filename, {replacement: '-'}); 
-	let fileExt = path.extname(secureFilename);
-	let secureFilenameNoExt = path.basename(secureFilename, fileExt);
-	return uniqueFilename(
-		'', secureFilenameNoExt) + fileExt.toLowerCase();
-}
-
-function roundHasLocalTarget(round) {
-	if(round) {
-		expectedPath = path.join(
-			__dirname, 'uploads', round.target_url);
-		return fs.existsSync(expectedPath);
-	} else {
-		return false;
-	}
-}
-
 
 app.get('/', function(req, res) {
 	res.redirect('/dashboard');
@@ -117,7 +68,7 @@ app.get('/login', function(req, res)
 	// Should present the user with a /login form
 	res.render('pages/login_form', {
 		my_title: 'Login',
-		loggedIn: isLoggedIn(req)
+		loggedIn: utils.isLoggedIn(req)
 	});
 });
 
@@ -178,7 +129,7 @@ app.get('/register', function(req, res)
 	res.render('pages/registrationPage', {
 		my_title: 'Register',
 		error: req.query.error,
-		loggedIn: isLoggedIn(req)
+		loggedIn: utils.isLoggedIn(req)
 	});
 });
 
@@ -212,7 +163,7 @@ app.post('/register', function(req, res)
 });
 
 app.get('/profile', function (req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users WHERE id='+ req.session.userID +';';
@@ -240,7 +191,7 @@ app.get('/profile', function (req, res) {
 });
 
 app.get('/leaderboard', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
 		' FROM users';
@@ -261,7 +212,7 @@ app.get('/leaderboard', function(req, res) {
 });
 
 app.get('/startRound', function(req, res) {
-	var loggedin = ensureLoggedInOrRedirect(req, res);
+	var loggedin = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
 		res.render('pages/startRound', {
 			my_title: 'Start Round',
@@ -277,7 +228,7 @@ app.get('/startRound', function(req, res) {
 
 app.post('/uploadTarget', function(req, res) {
 
-	loggedIn = ensureLoggedInOrRedirect(req, res);
+	loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if (loggedIn) {
 
 		var form = {}
@@ -288,7 +239,7 @@ app.post('/uploadTarget', function(req, res) {
 
 			// save the file to the filesystem
 			console.log(`Received file: ${filename}`);
-			form['filename'] = generateUniqueSecureFilename(filename);
+			form['filename'] = utils.generateUniqueSecureFilename(filename);
 			let filepath = path.join(__dirname, 'uploads', form['filename'])
 			console.log(`Saving the received file at: ${filepath}`);
 	        let fstream = fs.createWriteStream(filepath);
@@ -326,7 +277,7 @@ app.post('/uploadTarget', function(req, res) {
 app.get('/rounds/:roundId', function(req, res) {
 	
 	console.log('wwwwwwwww')
-	var loggedIn = ensureLoggedInOrRedirect(req, res);
+	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
 		console.log('hello');
 		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
@@ -342,7 +293,7 @@ app.get('/rounds/:roundId', function(req, res) {
 	      let user = results[1];
 
 	      console.log('hello')
-	      if(round && user && roundHasLocalTarget(round)) {
+	      if(round && user && utils.roundHasLocalTarget(round)) {
 	      	console.log('what?')
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
@@ -370,13 +321,13 @@ app.get('/rounds/:roundId', function(req, res) {
 
 app.get('/dashboard', function(req, res) {
 	var target_url = "SELECT target_url, id FROM rounds ORDER BY id DESC;";
-	var loggedIn = isLoggedIn(req);
+	var loggedIn = utils.isLoggedIn(req);
 	db.any(target_url)
 		.then(function(results){
 
 			// Don't display rounds for which the targets are "stale",
 			// i.e. their file does not exist in the filesystem 
-			results = results.filter(roundHasLocalTarget);
+			results = results.filter(utils.roundHasLocalTarget);
 
 			// Pad out the dashboard with some "fake" 
 			// rounds to make it look slightly nicer
@@ -388,7 +339,7 @@ app.get('/dashboard', function(req, res) {
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
 				loggedIn: loggedIn,
-				roundsets: groupBySetsOfN(results, 4)
+				roundsets: utils.groupBySetsOfN(results, 4)
 			});
 		})
 		.catch(function(error){
