@@ -101,10 +101,7 @@ function roundHasLocalTarget(round) {
 	if(round) {
 		expectedPath = path.join(
 			__dirname, 'uploads', round.target_url);
-		console.log(expectedPath);
-		exists = fs.existsSync(expectedPath);
-		console.log(exists);
-		return exists;
+		return fs.existsSync(expectedPath);
 	} else {
 		return false;
 	}
