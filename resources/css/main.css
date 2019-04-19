@@ -23,6 +23,7 @@ h2.title {
 
 /* Dashboard */
 
+/* Not logged in version has this header */
 header.w3-container {
   padding: 128px 16px;
 }
@@ -31,30 +32,41 @@ header.w3-container {
   text-align: center;
 }
 
-.rows {
-  margin-left: 5em;
-}
-
-.row.roundset {
+.row-roundset {
   margin-top: 2em;
-  margin-left: 5em;
 }
 
-.round-link {
-  width: 22%;
+@media(min-width: 650px) {
+  .rows {
+    margin-left: 5em;  
+  }
+  .round-link {
+    width: 22%;
+  }
+  .round-model.card {
+    margin: 2em 2em 0 0;
+  }
+  .round-model.card.fake {
+    width: 19.8%;
+  }
+}
+
+@media(max-width: 649px) {
+  .round-link {
+    width: 100%;
+  }
+  .round-model.card {
+    margin: 2em 3em 0 3em;
+  }
+  .round-model.card.fake {
+    display: none;
+  }
 }
 
 .round-model.card {
-  margin: 0;
   text-align: center;
-  margin-right: 2em;
-  /* Magic */
- /* display: flex;
-  align-items: center;  
-  justify-content: center;*/ 
 }
 .round-model.card.fake {
-  width: 19.8%;
   height: 180px;
   background-color: #eee;
   border: none;

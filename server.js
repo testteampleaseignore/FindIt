@@ -16,7 +16,7 @@ const busboy = require('connect-busboy');
 const uniqueFilename = require('unique-filename')
 
 // load other files 
-const utils = require('./utils.js')
+const utils = require('./utils.js');
 
 // load .env config file
 dotenv.config();
