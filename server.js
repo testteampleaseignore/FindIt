@@ -74,10 +74,14 @@ app.get('/login', function(req, res)
 
 app.post('/login', function(req, res)
 {
+	// look for fields in the request object,
+	// set them on the form object
 	var form = {}; 
 	req.busboy.on('field', function(key, value) {
 		form[key] = value;
 	});
+	// when done reading the request, proceed to
+	// access the form fields we received 
 	req.busboy.on('finish', function() {
 
 		// Validate the user's submitted login form by
@@ -258,7 +262,7 @@ app.post('/uploadTarget', function(req, res) {
 		    '(starter_id, datetime_started, target_url, ' + 
 		    'target_latitude, target_longitude) ' +
 		    `values (${req.session.userID}, '${date}', ` +
-		    `'${form['filename']}', ${form['lat']}, ${form['lat']});`;	 
+		    `'${form['filename']}', ${form['lat']}, ${form['lng']});`;	 
 
 		    // run the query!   
 		    db.oneOrNone(insert_round)

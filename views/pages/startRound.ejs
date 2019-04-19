@@ -1,4 +1,3 @@
-<% local_css = 'findit_test.css' %>
 <% include ../partials/header %>
 <% include ../partials/menu %>
 
@@ -16,96 +15,37 @@
 </form>
 
 <div class="container">
-      <h1>Current Location</h1>
-      <div id="map-canvas" style="width:600px;height:400px"></div>
-    </div>
+  <h1>Current Location</h1>
+  <div id="map-canvas" style="width:600px;height:400px"></div>
+</div>
 
-    <script>
-    window.lat = 40.0150;
-    window.lng= -105.2705;
+<script> 
+  function updateFormLocation(){
+      console.log('submitted!');
+      document.getElementById("lat").value = window.lat;
+      document.getElementById("lng").value = window.lng;
+  }
+  function previewFile(){
+      var preview = document.querySelector('img'); //selects the query named img
+      var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+      var reader  = new FileReader();
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(updatePosition);
-        }
-      
-        return null;
-    };
-
-    function updatePosition(position) {
-      if (position) {
-        window.lat = position.coords.latitude;
-        window.lng = position.coords.longitude;
+      reader.onloadend = function () {
+          preview.src = reader.result;
+          // enable the submit button when a file is loaded
+          document.getElementById('subbutton').disabled = false;
       }
-    }
-    
-    setInterval(function(){updatePosition(getLocation());}, 5000);
-      
-    function currentLocation() {
-      return {lat:window.lat, lng:window.lng};
-    };
 
-    var map;
-    var mark;
-
-    var initialize = function() {
-      map  = new google.maps.Map(document.getElementById('map-canvas'), {center:{lat:lat,lng:lng},zoom:17});
-      mark = new google.maps.Marker({position:{lat:lat, lng:lng}, map:map});
-    };
-
-    window.initialize = initialize;
-
-    var redraw = function(payload) {
-      lat = payload.message.lat;
-      lng = payload.message.lng;
-
-      map.setCenter({lat:lat, lng:lng, alt:0});
-      mark.setPosition({lat:lat, lng:lng, alt:0});
-    };
-
-    var pnChannel = "map2-channel";
-
-    var pubnub = new PubNub({
-      publishKey:   '<%= keys.pn_pub %>',
-      subscribeKey: '<%= keys.pn_sub %>'
-    });
-
-    pubnub.subscribe({channels: [pnChannel]});
-    pubnub.addListener({message:redraw});
-
-    setInterval(function() {
-      pubnub.publish({channel:pnChannel, message:currentLocation()});
-    }, 5000);
-        
-    function updateFormLocation(){
-        console.log('submitted!');
-        document.getElementById("lat").value = window.lat;
-        document.getElementById("lng").value = window.lng;
-    }
-    </script>
-
-<script>
-    function previewFile(){
-        var preview = document.querySelector('img'); //selects the query named img
-        var file    = document.querySelector('input[type=file]').files[0]; //sames as here
-        var reader  = new FileReader();
- 
-        reader.onloadend = function () {
-            preview.src = reader.result;
-            // enable the submit button when a file is loaded
-            document.getElementById('subbutton').disabled = false;
-        }
- 
-        if (file) {
-            reader.readAsDataURL(file); //reads the data as a URL
-        }else{
-            preview.src = "";
-        }
-        console.log(document.getElementById("lat").innterHTML);
-    }
-    previewFile();
+      if (file) {
+          reader.readAsDataURL(file); //reads the data as a URL
+      }else{
+          preview.src = "";
+      }
+  }
+  previewFile();
 </script>
 
+<script src="../resources/js/currentLocationMap.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=<%= keys.googlemaps %>&callback=initialize"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <% include ../partials/footer %>
