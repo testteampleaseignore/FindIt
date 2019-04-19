@@ -6,8 +6,8 @@
 <h2 class="title"><%= name %>'s Round</h2>
 
 <div class="container image-container">
-  <p id="lat"><%= round.target_latitude %></p>
-  <p id="lng"><%= round.target_longitude %></p>
+  <p style="display: none;" id="lat"><%= round.target_latitude %></p>
+  <p style="display: none;" id="lng"><%= round.target_longitude %></p>
   <p id="distance"></p>
   <img src='../uploads/<%=round.target_url%>'>
 </div>
