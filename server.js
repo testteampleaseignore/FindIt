@@ -27,15 +27,6 @@ app.set('view engine', 'ejs');
 //This line is necessary for us to use relative 
 // paths and access our resources directory
 app.use(express.static(__dirname + '/')); 
-// Create a session and initialize
-// a not-so-secret secret key
-app.use(session({
-	secret: process.env.SECRET || 'whisper', 
-	saveUninitialized: true,
-	resave: true,
-	store: new pgSession({pgPromise: db})
-}));
-app.use(busboy({immediate: true }));
 
 // get db & its configuration...
 // support old use of db-config.json for now;
@@ -46,6 +37,17 @@ if(process.env.DATABASE_URL) {
     var dbConfig = JSON.parse(fs.readFileSync('db-config.json', 'utf8'));
     var db = pgp(dbConfig);
 }
+
+// Create a session and initialize
+// a not-so-secret secret key
+app.use(session({
+	secret: process.env.SECRET || 'whisper', 
+	saveUninitialized: true,
+	resave: true,
+	store: new pgSession({pgPromise: db})
+}));
+app.use(busboy({immediate: true }));
+
 
 // One way we could handle score upload logic
 var PLACEMENTS_TO_POINTS = {
