@@ -6,8 +6,12 @@
 <h2 class="title"><%= name %>'s Round</h2>
 
 <div class="container image-container">
-  <p style="display: none;" id="lat"><%= round.target_latitude %></p>
-  <p style="display: none;" id="lng"><%= round.target_longitude %></p>
+  <p>Target location:</p>
+  <p id="target-lat"><%= round.target_latitude %></p>
+  <p id="target-lng"><%= round.target_longitude %></p>
+  <p>Your location:</p>
+  <p id="your-lat"></p>
+  <p id="your-lng"></p>
   <p id="distance"></p>
   <img src='../uploads/<%=round.target_url%>'>
 </div>
@@ -40,9 +44,11 @@
         window.lat = position.coords.latitude;
         window.lng = position.coords.longitude;
         let calculatedDistance = distance(
-          $('#lat').html(), $('#lng').html(), 
+          $('#target-lat').html(), $('#target-lng').html(), 
           window.lat, window.lng, 'M');
         $('#distance').html(`distance in feet: ${calculatedDistance / 5280}`);
+        $('#your-lat').html(window.lat);
+        $('#your-lng').html(window.lng);
       }
     }
     
