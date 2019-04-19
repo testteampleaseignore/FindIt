@@ -41,14 +41,22 @@
 
     function updatePosition(position) {
       if (position) {
+
+        // update globals holding current coords
         window.lat = position.coords.latitude;
         window.lng = position.coords.longitude;
+        
+        // display the current lat / long as debugging info
+        $('#your-lat').html(window.lat);
+        $('#your-lng').html(window.lng);
+        
+        // calculate & display the distance from the 
+        // current location to the target
         let calculatedDistance = distance(
           $('#target-lat').html(), $('#target-lng').html(), 
           window.lat, window.lng, 'M');
         $('#distance').html(`distance in feet: ${calculatedDistance / 5280}`);
-        $('#your-lat').html(window.lat);
-        $('#your-lng').html(window.lng);
+
       }
     }
     

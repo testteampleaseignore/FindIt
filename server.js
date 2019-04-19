@@ -285,24 +285,16 @@ app.get('/rounds/:roundId', function(req, res) {
 	
 	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
-		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
-		var starter_id = "SELECT starter_id FROM ROUNDS WHERE id=" + req.params.roundId + ';';
-        var user_name = "SELECT user_name FROM users WHERE id=" + starter_id + ';';
-		db.task('get-everything', task => {
-	    	return task.batch([
-	            task.oneOrNone(round_stmt),
-	            task.one(user_name)
-	        ]);
-		})
-		.then(results => {
-	      let round = results[0];
-	      let user = results[1];
-
-	      if(round && user && utils.roundHasLocalTarget(round)) {
+		var round_stmt =  "SELECT * FROM rounds " + 
+						  "JOIN users on rounds.starter_id=users.id " + 
+						  "WHERE rounds.id=" + req.params.roundId + ';';
+		db.one(round_stmt)
+		.then(round_user => {
+	      if(round_user && utils.roundHasLocalTarget(round_user)) {
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
-		        round: round,
-		        name: user.user_name,
+		        round: round_user,
+		        name: round_user.user_name,
 		        loggedIn: true,
                 keys: {
 				    googlemaps: process.env.GOOGLE_MAPS_API_KEY,
@@ -312,7 +304,7 @@ app.get('/rounds/:roundId', function(req, res) {
 	      	})
 	      } else {
 	      	console.log('No such user, round, or invalid round');
-	      	console.log(results);
+	      	// console.log(results);
 	      	res.redirect('/dashboard');
 	      }
 		})
