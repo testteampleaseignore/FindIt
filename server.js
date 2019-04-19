@@ -138,31 +138,36 @@ app.get('/register', function(req, res)
 
 app.post('/register', function(req, res)
 {
-	var body = req.body;
-	var password_hash = bcrypt.hashSync(body.password, 10);
-	var insert_user = 'INSERT INTO users (user_name, email, password_hash) ' +
-	                      `VALUES ('${body.username}', '${body.email}', '${password_hash}') ` +
-	                      'RETURNING id;' 
-	db.oneOrNone(insert_user)
-	  .then(function(result) {
-	  	if(result) { 
-      	  // Log the successfully registered user in; NOT working yet
-      	  req.session.userID = result.id;
-      	  req.session.save(function(err) {
-			  // If everything looks good, send the now-logged-in user to the home page
-			  res.redirect('/dashboard');
-      	  });
-	  	}
-	  })
-	  .catch((result) => {
-	  	console.log(result);
-	    console.log(result.message);
-	    if(result.message.startsWith('duplicate')) {
-	    	var message = 'User already exists! Try again.';
-	    	var urlEncodedMessage = encodeURIComponent(message);
-	    	res.redirect(`/register?error=${urlEncodedMessage}`);
-	    }
-	  })
+	var form = {}; 
+	req.busboy.on('field', function(key, value) {
+		form[key] = value;
+	});
+	req.busboy.on('finish', function() {
+		var password_hash = bcrypt.hashSync(form.password, 10);
+		var insert_user = 'INSERT INTO users (user_name, email, password_hash) ' +
+		                      `VALUES ('${form.username}', '${form.email}', '${password_hash}') ` +
+		                      'RETURNING id;' 
+		db.oneOrNone(insert_user)
+		  .then(function(result) {
+		  	if(result) { 
+	      	  // Log the successfully registered user in; NOT working yet
+	      	  req.session.userID = result.id;
+	      	  req.session.save(function(err) {
+				  // If everything looks good, send the now-logged-in user to the home page
+				  res.redirect('/dashboard');
+	      	  });
+		  	}
+		  })
+		  .catch((result) => {
+		  	console.log(result);
+		    console.log(result.message);
+		    if(result.message.startsWith('duplicate')) {
+		    	var message = 'User already exists! Try again.';
+		    	var urlEncodedMessage = encodeURIComponent(message);
+		    	res.redirect(`/register?error=${urlEncodedMessage}`);
+		    }
+		  });
+	});
 });
 
 app.get('/profile', function (req, res) {

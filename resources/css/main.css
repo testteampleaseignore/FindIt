@@ -104,3 +104,11 @@ header.w3-container {
 #map-canvas {
     margin: auto;
 }
+
+/* Register */
+
+#register {
+  margin: auto;
+  margin-top: 5em;
+  width: 60%;
+}
