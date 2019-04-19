@@ -13,7 +13,6 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const bcrypt = require('bcrypt');
 const busboy = require('connect-busboy');
-const filenamify = require('filenamify');
 const uniqueFilename = require('unique-filename')
 
 // load other files 

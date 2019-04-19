@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const filenamify = require('filenamify');
 
 
 module.exports = {
@@ -20,7 +21,7 @@ module.exports = {
 	},
 	groupBySetsOfN: function(items, n) {
 		/* Take an array like this: [1, 2, 3, 4, 5, 6, 7],
-		   and return [[1, 2, 3], [4, 5, 6], [7]] */
+		   and, say, n=3; return [[1, 2, 3], [4, 5, 6], [7]] */
 		let groups = [];
 		let currentGroup;
 		items.forEach(function(item, i) {
