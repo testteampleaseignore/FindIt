@@ -286,7 +286,8 @@ app.get('/rounds/:roundId', function(req, res) {
 	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
 		var round_stmt =  "SELECT target_url, target_latitude, target_longitude, id FROM rounds WHERE id=" + req.params.roundId + ';';
-		var user_name = 'SELECT user_name FROM users WHERE id=' + req.session.userID + ';';
+		var starter_id = "SELECT starter_id FROM ROUNDS WHERE id=" + req.params.roundId + ';';
+        var user_name = "SELECT user_name FROM users WHERE id=" + starter_id + ';';
 		db.task('get-everything', task => {
 	    	return task.batch([
 	            task.oneOrNone(round_stmt),
