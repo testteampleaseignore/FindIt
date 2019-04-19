@@ -54,8 +54,8 @@
         // current location to the target
         let calculatedDistance = distance(
           $('#target-lat').html(), $('#target-lng').html(), 
-          window.lat, window.lng, 'M');
-        $('#distance').html(`distance in feet: ${calculatedDistance / 5280}`);
+          window.lat, window.lng);
+        $('#distance').html(`distance in feet: ${calculatedDistance * 5280}`);
 
       }
     }
@@ -102,7 +102,7 @@
         document.getElementById("lat").value = window.lat;
         document.getElementById("lng").value = window.lng;
     }
-    function distance(lat1, lon1, lat2, lon2, unit) {
+    function distance(lat1, lon1, lat2, lon2) {
       if ((lat1 == lat2) && (lon1 == lon2)) {
         return 0;
       }
@@ -118,8 +118,6 @@
         dist = Math.acos(dist);
         dist = dist * 180/Math.PI;
         dist = dist * 60 * 1.1515;
-        if (unit=="K") { dist = dist * 1.609344 }
-        if (unit=="N") { dist = dist * 0.8684 }
         return dist;
       }
     }
