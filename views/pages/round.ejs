@@ -5,14 +5,21 @@
 
 <h2 class="title"><%= name %>'s Round</h2>
 
+<div class="hidden-container">
+  <div class="debugging" <% if(!debugging) { %> style="display: none" <% } %> >
+    <p id="target-lat"><%= round.target_latitude %></p>
+    <p id="target-lng"><%= round.target_longitude %></p>
+    <p id="your-lat"></p>
+    <p id="your-lng"></p>
+    <p id="distance"></p>
+  </div>
+  <form id="guessTarget" action="/guessTargetLocation" 
+        method="POST" enctype="multipart/formdata">
+    <input id="lat" type="hidden"></p>
+    <input id="lng" type="hidden"></p>
+  </form>
+</div>
 <div class="container image-container">
-  <p>Target location:</p>
-  <p id="target-lat"><%= round.target_latitude %></p>
-  <p id="target-lng"><%= round.target_longitude %></p>
-  <p>Your location:</p>
-  <p id="your-lat"></p>
-  <p id="your-lng"></p>
-  <p id="distance"></p>
   <img src='../uploads/<%=round.target_url%>'>
 </div>
 <div class="container button-container">
@@ -45,13 +52,17 @@
         // update globals holding current coords
         window.lat = position.coords.latitude;
         window.lng = position.coords.longitude;
+
+        // update hidden guessTarget form
+        document.getElementById('lat').innerHTML = window.lat;
+        document.getElementById('lng').innerHTML = window.lng;
         
         // display the current lat / long as debugging info
-        $('#your-lat').html(window.lat);
-        $('#your-lng').html(window.lng);
+        document.getElementById('your-lat').innerHTML = window.lat;
+        document.getElementById('your-lng').innerHTML = window.lng;
         
         // calculate & display the distance from the 
-        // current location to the target
+        // current location to the target (in debugging)
         let calculatedDistance = distance(
           $('#target-lat').html(), $('#target-lng').html(), 
           window.lat, window.lng);
@@ -60,6 +71,7 @@
       }
     }
     
+    updatePosition(getLocation());
     setInterval(function(){updatePosition(getLocation());}, 1500);
       
     function currentLocation() {

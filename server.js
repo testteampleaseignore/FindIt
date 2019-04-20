@@ -44,10 +44,14 @@ app.use(session({
 	secret: process.env.SECRET || 'whisper', 
 	saveUninitialized: true,
 	resave: true,
+	// pass our database in here so that we 
+	// can serialize sessions inside of it
 	store: new pgSession({pgPromise: db})
 }));
-app.use(busboy({immediate: true }));
 
+// setup POST method processing
+// NOTE: database needs to exist at this point, maybe?
+app.use(busboy({immediate: true }));
 
 // One way we could handle score upload logic
 var PLACEMENTS_TO_POINTS = {
@@ -296,8 +300,9 @@ app.get('/rounds/:roundId', function(req, res) {
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        round: round_user,
-		        name: round_user.user_name,
 		        loggedIn: true,
+		        name: round_user.user_name,
+		        debugging: req.query.debugging,
                 keys: {
 				    googlemaps: process.env.GOOGLE_MAPS_API_KEY,
 				    pn_sub: process.env.PN_SUB_KEY, 
@@ -306,7 +311,7 @@ app.get('/rounds/:roundId', function(req, res) {
 	      	})
 	      } else {
 	      	console.log('No such user, round, or invalid round');
-	      	// console.log(results);
+	      	console.log(results);
 	      	res.redirect('/dashboard');
 	      }
 		})

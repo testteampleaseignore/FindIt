@@ -38,6 +38,7 @@
       }
     }
     
+    updatePosition(getLocation()):
     setInterval(function(){updatePosition(getLocation());}, 1500);
       
     function currentLocation() {
@@ -72,9 +73,10 @@
     pubnub.subscribe({channels: [pnChannel]});
     pubnub.addListener({message:redraw});
 
+    pubnub.publish({channel:pnChannel, message:currentLocation()});
     setInterval(function() {
       pubnub.publish({channel:pnChannel, message:currentLocation()});
-    }, 5000);
+    }, 1500);
         
     function updateFormLocation(){
         document.getElementById("lat").value = window.lat;
