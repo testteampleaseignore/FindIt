@@ -64,6 +64,27 @@ var PLACEMENTS_TO_POINTS = {
 // Distance is in feet
 var DISTANCE_TO_FIND = 45;
 
+function handleCorrectGuess(round, callback) {
+	/* Expects: round, user, callback; 
+	   Callback accepts two arguments, 
+	     (object) round AND (integer) place */
+
+	// do database stuff (assign points)
+	// determine the user's place (1, 2, 3) i.e. first second third
+	let place = 1;
+	callback(round, place); 
+}
+function handleInCorrectGuess(round, callback) {
+	/* Expects: round, user, callback; 
+	   Callback accepts one argument, (object) round */
+
+	// do database stuff (increment attempts 
+					   // or add a row to round_attempts,
+					   // whichever works and is easy)
+	callback(round)
+}
+
+
 
 app.get('/', function(req, res) {
 	res.redirect('/dashboard');
@@ -257,6 +278,7 @@ app.post('/guessTargetLocation', function(req, res) {
 					console.log(`query: ${round_stmt}`);
 					db.one(round_stmt)
 						.then(function(round) {
+
 							console.log('Actual coordinates:')
 							console.log(round);
 							console.log('Guessed coordinates: ')
@@ -268,17 +290,26 @@ app.post('/guessTargetLocation', function(req, res) {
 							);
 							console.log('Distance between the two: ')
 							console.log(distanceInFeet);
+
+							// TODO: Add a check for user's round_attempts >= 3
+							//       Don't let them make infinite attempts
+							// TODO: Add a check for user guessing their own 
+							//       round--don't let them! display an error message
+							//       telling them it's their round
 							if(distanceInFeet < DISTANCE_TO_FIND) {
-								let place = 1;
-								res.redirect(
+								handleCorrectGuess(round, function(place) {
+									res.redirect(
 									('/dashboard?message=' + 
 									 encodeURIComponent(utils.congratulations(place, round)) +
-									 '&messageLevel=success'));
+									 '&messageLevel=success'));	
+								});
 							} else {
-								res.redirect(
+								handleIncorrectGuess(round, function(round) {
+									res.redirect(
 									`/rounds/${form.round_id}?message=` +
 										encodeURIComponent(utils.sorry(round)) +
-									'&messageLevel=primary')
+									'&messageLevel=primary');
+								});
 							}
 						})
 						.catch(function(results) {
@@ -389,6 +420,13 @@ app.get('/dashboard', function(req, res) {
 			// i.e. their file does not exist in the filesystem 
 			results = results.filter(utils.roundHasLocalTarget);
 
+			// TODO: For each round, inside the round card, 
+			//       display how much time it has left / it has been going on for
+			//       e.g with a countdown or countup being updated continuously
+			// TODO: For each round, inside the round card, 
+			//       display the number of users or the names of users 
+			//       who have placed in this round, possibly with 
+			//       their ranking, like a mini-leaderboard 
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
 				message: {
