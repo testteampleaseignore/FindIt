@@ -65,9 +65,11 @@
         // calculate & display the distance from the 
         // current location to the target (in debugging)
         let calculatedDistance = distance(
-          $('#target-lat').html(), $('#target-lng').html(), 
+          document.getElementById('target-lat').innerHTML, 
+          document.getElementById('target-lng').innerHTML, 
           window.lat, window.lng);
-        $('#distance').html(`distance in feet: ${calculatedDistance * 5280}`);
+        document.getElementById('distance').innerHTML = 
+          `distance in feet: ${calculatedDistance * 5280}`;
 
       }
     }
@@ -111,10 +113,6 @@
       pubnub.publish({channel:pnChannel, message:currentLocation()});
     }, 5000);
         
-    function updateFormLocation(){
-        document.getElementById("lat").value = window.lat;
-        document.getElementById("lng").value = window.lng;
-    }
     function distance(lat1, lon1, lat2, lon2) {
       if ((lat1 == lat2) && (lon1 == lon2)) {
         return 0;
