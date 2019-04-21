@@ -331,18 +331,6 @@ app.get('/dashboard', function(req, res) {
 			// Don't display rounds for which the targets are "stale",
 			// i.e. their file does not exist in the filesystem 
 			results = results.filter(utils.roundHasLocalTarget);
-			results.forEach(function(result) {
-
-				// Set the number of columns each round 
-				// based on a bootstrap 12-column grid 
-				if(results.length < 4) {
-					result.cols = 1 / results.length * 12;
-				} else {
-					// For 4 or more rounds, allot
-					// one of the total 4-column view
-					result.cols = 3;
-				}
-			});
 			
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',

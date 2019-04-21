@@ -39,7 +39,7 @@ header.w3-container {
   margin-bottom: 2em;
 }
 .round-model.card img {
-  max-height: calc(25vw + 140px);
+  max-height: calc(16vw + 120px);
   text-align: center;
 }
 
