@@ -232,11 +232,10 @@ app.get('/startRound', function(req, res) {
 		res.render('pages/startRound', {
 			my_title: 'Start Round',
 			loggedIn: true,
+			debugging: req.query.debugging,
             keys: {
-			googlemaps: process.env.GOOGLE_MAPS_API_KEY,
-			pn_sub: process.env.PN_SUB_KEY, 
-			pn_pub: process.env.PN_PUB_KEY
-		}
+				googlemaps: process.env.GOOGLE_MAPS_API_KEY
+			}
 		});
 	}
 });
@@ -358,9 +357,7 @@ app.get('/rounds/:roundId', function(req, res) {
 		        loggedIn: true,
 		        debugging: req.query.debugging,
                 keys: {
-				    googlemaps: process.env.GOOGLE_MAPS_API_KEY,
-				    pn_sub: process.env.PN_SUB_KEY, 
-				    pn_pub: process.env.PN_PUB_KEY
+				    googlemaps: process.env.GOOGLE_MAPS_API_KEY
                 },
 		        round: round_user,
 		        name: round_user.starter_name,

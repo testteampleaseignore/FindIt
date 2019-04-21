@@ -7,7 +7,7 @@
 <br>
 
 <div class="hidden-container">
-  <div class="debugging" <% if(!debugging) { %> style="display: none" <% } %>>
+  <div class="debugging" <% if(typeof debugging === 'undefined') { %> style="display: none" <% } %>>
     <p id="your-lat"></p>
     <p id="your-lng"></p>
   </div>
@@ -25,72 +25,11 @@
       <div id="map-canvas"></div>
 </div>
 
-<script>
-    window.lat = 40.0150;
-    window.lng= -105.2705;
-
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(updatePosition);
-        }
-      
-        return null;
-    };
-
-    function updatePosition(position) {
-      if (position) {
-        window.lat = position.coords.latitude;
-        window.lng = position.coords.longitude;
-      }
-    }
-    
-    updatePosition(getLocation());
-    setInterval(function(){updatePosition(getLocation());}, 1500);
-      
-    function currentLocation() {
-      return {lat:window.lat, lng:window.lng};
-    };
-
-    var map;
-    var mark;
-
-    var initialize = function() {
-      map  = new google.maps.Map(document.getElementById('map-canvas'), {center:{lat:lat,lng:lng},zoom:17});
-      mark = new google.maps.Marker({position:{lat:lat, lng:lng}, map:map});
-    };
-
-    window.initialize = initialize;
-
-    var redraw = function(payload) {
-      lat = payload.message.lat;
-      lng = payload.message.lng;
-
-      map.setCenter({lat:lat, lng:lng, alt:0});
-      mark.setPosition({lat:lat, lng:lng, alt:0});
-    };
-
-    var pnChannel = "map2-channel";
-
-    var pubnub = new PubNub({
-      publishKey:   '<%= keys.pn_pub %>',
-      subscribeKey: '<%= keys.pn_sub %>'
-    });
-
-    pubnub.subscribe({channels: [pnChannel]});
-    pubnub.addListener({message:redraw});
-
-    pubnub.publish({channel:pnChannel, message:currentLocation()});
-    setInterval(function() {
-      pubnub.publish({channel:pnChannel, message:currentLocation()});
-    }, 1500);
-        
+<script>   
     function updateFormLocation(){
         document.getElementById("lat").value = window.lat;
         document.getElementById("lng").value = window.lng;
     }
-    </script>
-
-<script>
     function previewFile(){
         var preview = document.querySelector('img'); //selects the query named img
         var file    = document.querySelector('input[type=file]').files[0]; //sames as here
@@ -112,6 +51,30 @@
     previewFile();
 </script>
 
+<script src="../resources/js/map.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=<%= keys.googlemaps %>&callback=initialize"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="../resources/js/geolocation.js"></script>
+<script>
+  function handleLocationUpdate(lat, lng) {
+
+      // update hidden guessTarget form
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+
+      // display the current lat / long as debugging info
+      document.getElementById('your-lat').innerHTML = lat;
+      document.getElementById('your-lng').innerHTML = lng;
+
+      redraw(lat, lng);
+      console.log('redrew map');
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    getLocation(handleLocationUpdate);
+    setInterval(function(){
+      getLocation(handleLocationUpdate);
+    }, 1500);
+  });
+</script>
 <% include ../partials/footer %>
