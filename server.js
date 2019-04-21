@@ -79,25 +79,49 @@ const ROUND_TIME_LIMIT_IN_SECONDS = 7 * 24 * 60 * 60;
 const MAX_PLAYERS_TO_PLACE_IN_ROUND = 8;
 
 
-function handleCorrectGuess(round, callback) {
-	/* Expects: round, user, callback; 
-	   Callback accepts two arguments, 
-	     (object) round AND (integer) place */
+function handleCorrectGuess(round, user_id, callback) {
+	/* Expects three arguments: 
+			(object) round -- round info for the round where 
+			                  the user made a correct guess
+			(object) user_id -- id of user who made correct guess
+			                    of the round's target 
+			(function) callback -- function which caller expects
+			                       will be called after all backend
+			                       logic has been handled; callback
+			                       expects one argument:
+			                           (integer) place -- the place
+			                                     the user received 
+			                                     in this round
+	 
+	   This method is not responsible for communicating with the 
+	   user at all, just making database changes.*/
 
-	// do database stuff (assign points)
-	// determine the user's place (1, 2, 3) i.e. first second third
+	// 1. add points to user record
+	// 2. add (user_id, round_id, placement_number) to 
+	//   round_placements table
+	// 3. pass placement_number into callback
 	let place = 1;
-	callback(round, place); 
+	callback(place); 
 }
 
-function handleIncorrectGuess(round, callback) {
-	/* Expects: round, user, callback; 
-	   Callback accepts one argument, (object) round */
+function handleIncorrectGuess(round, user_id, callback) {
+	/* Expects three arguments: 
+			(object) round -- round info for the round where 
+			                  the user made a correct guess
+			(object) user_id -- user_id of user who made the 
+			                    correct guess of round's target 
+			(function) callback -- function which caller expects
+			                       will be called after all backend
+			                       logic has been handled; callback
+			                       expects no arguments.
+	 
+	   This method is not responsible for communicating with the 
+	   user at all, just making database changes.*/
 
-	// do database stuff (increment attempts 
-					   // or add a row to round_attempts,
-					   // whichever works and is easy)
-	callback(round)
+	// 1. increment attempts 
+	// (or add a row to round_attempts,
+	// whichever works and is easier)
+	callback()
 }
 
 app.get('/', function(req, res) {
@@ -306,20 +330,28 @@ app.post('/guessTargetLocation', function(req, res) {
 								);
 								if(distanceInFeet < DISTANCE_TO_FIND) {
 									console.log('Guessed correct');
-									handleCorrectGuess(round, function(place) {
-										res.redirect(
-										('/dashboard?message=' + 
-										 encodeURIComponent(messages.congratulations(place, round)) +
-										 '&messageLevel=success'));	
-									});
+									handleCorrectGuess(
+										round, req.session.userID, function(place) {
+											res.redirect(
+												'/dashboard?message=' + 
+												 encodeURIComponent(
+												 	messages.congratulations(place, round)) +
+												 '&messageLevel=success'
+											);
+										}	
+									);
 								} else {
-								console.log('Guessed incorrect');
-								handleIncorrectGuess(round, function(round) {
-									res.redirect(
-										`/rounds/${form.round_id}?message=` +
-											encodeURIComponent(messages.sorry(round)) +
-										'&messageLevel=primary');
-									});
+									console.log('Guessed incorrect');
+									handleIncorrectGuess(
+										round, req.session.userID, function() {
+											res.redirect(
+												`/rounds/${form.round_id}?message=` +
+												encodeURIComponent(
+													messages.sorry(round)) +
+												'&messageLevel=primary'
+											);
+										}
+									);
 								}	
 							} else {
 								res.redirect(
