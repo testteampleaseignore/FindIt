@@ -1,5 +1,7 @@
 <% include ../partials/header %>
-<% var loggedOutBanner = true; %>
+<% if(!loggedIn) { 	
+	let loggedOutBanner = true; 
+} %>
 <% include ../partials/menu %>			
 
 

@@ -1,6 +1,6 @@
 
-/* Copied this from StackOverflow 
-   Python's partial function 
+/* Copied this from StackOverflow;
+   See Python's partial function 
    https://docs.python.org/2/library/functools.html#functools.partial */
 function partial() {
   var args = Array.prototype.slice.call(arguments);

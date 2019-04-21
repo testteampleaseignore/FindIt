@@ -16,6 +16,7 @@ const busboy = require('connect-busboy');
 
 // load other files 
 const utils = require('./utils.js');
+const messages = require('./messages.js');
 
 // load .env config file
 dotenv.config();
@@ -61,8 +62,22 @@ var PLACEMENTS_TO_POINTS = {
 	4: 2,
 	5: 1	
 }
+
+// This is how close you have to be 
+// to a target to "find" it when you
+// press the "I'm here" button;
 // Distance is in feet
-var DISTANCE_TO_FIND = 45;
+const DISTANCE_TO_FIND = 45;
+
+// This is the elapsed time before a round 
+// will end on its own if the max number of
+// players do not find it
+const ROUND_TIME_LIMIT_IN_SECONDS = 7 * 24 * 60 * 60;
+
+// This is the number of people who can place
+// in a round before it will be end 
+const MAX_PLAYERS_TO_PLACE_IN_ROUND = 8;
+
 
 function handleCorrectGuess(round, callback) {
 	/* Expects: round, user, callback; 
@@ -74,7 +89,8 @@ function handleCorrectGuess(round, callback) {
 	let place = 1;
 	callback(round, place); 
 }
-function handleInCorrectGuess(round, callback) {
+
+function handleIncorrectGuess(round, callback) {
 	/* Expects: round, user, callback; 
 	   Callback accepts one argument, (object) round */
 
@@ -83,8 +99,6 @@ function handleInCorrectGuess(round, callback) {
 					   // whichever works and is easy)
 	callback(round)
 }
-
-
 
 app.get('/', function(req, res) {
 	res.redirect('/dashboard');
@@ -273,44 +287,46 @@ app.post('/guessTargetLocation', function(req, res) {
 			});
 			req.busboy.on('finish', function() {
 				if(form.lat && form.lng && form.round_id) {
-					round_stmt = 'SELECT id, target_latitude, target_longitude ' + 
+					round_stmt = 'SELECT id, starter_id, target_latitude, target_longitude ' + 
 						   		 `FROM rounds WHERE id=${form.round_id};`;
 					console.log(`query: ${round_stmt}`);
 					db.one(round_stmt)
 						.then(function(round) {
 
-							console.log('Actual coordinates:')
-							console.log(round);
-							console.log('Guessed coordinates: ')
-							console.log(form);
-							let distanceInFeet = utils.distance(
-								round.target_latitude,
-								round.target_longitude,
-								form.lat, form.lng
-							);
-							console.log('Distance between the two: ')
-							console.log(distanceInFeet);
-
 							// TODO: Add a check for user's round_attempts >= 3
 							//       Don't let them make infinite attempts
-							// TODO: Add a check for user guessing their own 
-							//       round--don't let them! display an error message
-							//       telling them it's their round
-							if(distanceInFeet < DISTANCE_TO_FIND) {
-								handleCorrectGuess(round, function(place) {
-									res.redirect(
-									('/dashboard?message=' + 
-									 encodeURIComponent(utils.congratulations(place, round)) +
-									 '&messageLevel=success'));	
-								});
-							} else {
+
+							console.log(`User who started round: ${round.starter_id}`);
+							console.log(`User who is logged in: ${req.session.userID}`);
+							if(round.starter_id !== req.session.userID) {
+								let distanceInFeet = utils.distance(
+									round.target_latitude,
+									round.target_longitude,
+									form.lat, form.lng
+								);
+								if(distanceInFeet < DISTANCE_TO_FIND) {
+									console.log('Guessed correct');
+									handleCorrectGuess(round, function(place) {
+										res.redirect(
+										('/dashboard?message=' + 
+										 encodeURIComponent(messages.congratulations(place, round)) +
+										 '&messageLevel=success'));	
+									});
+								} else {
+								console.log('Guessed incorrect');
 								handleIncorrectGuess(round, function(round) {
 									res.redirect(
-									`/rounds/${form.round_id}?message=` +
-										encodeURIComponent(utils.sorry(round)) +
-									'&messageLevel=primary');
-								});
-							}
+										`/rounds/${form.round_id}?message=` +
+											encodeURIComponent(messages.sorry(round)) +
+										'&messageLevel=primary');
+									});
+								}	
+							} else {
+								res.redirect(
+									('/dashboard?message=' + 
+									 encodeURIComponent(messages.selfguess) +
+									 '&messageLevel=danger'));	
+							}	
 						})
 						.catch(function(results) {
 							console.log(results);
@@ -360,12 +376,14 @@ app.post('/uploadTarget', function(req, res) {
 		    // run the query!   
 		    db.oneOrNone(insert_round)
 			  .then(function(result) {
-			  	res.redirect('/dashboard');
+			  	res.redirect(`/dashboard?message=${encodeURIComponent(messages.roundCreated)}` + 
+			  				'&messageLevel=success');
 			  })
 			  .catch((result) => {
 			  	console.log(`sql: ${insert_round}`);
 			  	console.log(`result: ${result}`);
-		        res.redirect('/dashboard');
+		        res.redirect(`/dashboard?message=${encodeURIComponent(messages.somethingWentWrong)}` +
+		        			 '&messageLevel=danger');
 			  });
 		});
 	}
@@ -376,13 +394,29 @@ app.get('/rounds/:roundId', function(req, res) {
 	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
 		var round_stmt =  "SELECT rounds.id as round_id, user_name as starter_name, " +
-						  "rounds.target_latitude, rounds.target_longitude, rounds.target_url FROM rounds " + 
+						  "rounds.target_latitude, rounds.target_longitude, rounds.target_url, " +
+						  "rounds.starter_id FROM rounds " + 
 						  "JOIN users on rounds.starter_id=users.id " + 
 						  "WHERE rounds.id=" + req.params.roundId + ';';
 		db.one(round_stmt)
-		.then(round_user => {
-		  console.log(round_user);
-	      if(round_user && utils.roundHasLocalTarget(round_user)) {
+		.then(round => {
+		  // if this round exists & has a file as its target
+	      if(round && utils.roundHasLocalTarget(round)) {
+
+	      	// define a message if one was passed to us
+	      	let message = {};
+	      	if(req.query.message && req.query.messageLevel) {
+				message = {
+					content: req.query.message,
+					level: req.query.messageLevel
+				}
+			}
+			currentUserOwnsRound = req.session.userID === round.starter_id;
+			if(currentUserOwnsRound) {
+				console.log('user viewing their own round');
+			} else {
+				console.log('user viewing a round');
+			}
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
 		        loggedIn: true,
@@ -390,12 +424,9 @@ app.get('/rounds/:roundId', function(req, res) {
                 keys: {
 				    googlemaps: process.env.GOOGLE_MAPS_API_KEY
                 },
-		        round: round_user,
-		        name: round_user.starter_name,
-		        message: {
-		        	content: req.query.message,
-		        	level: req.query.messageLevel
-		        }
+		        round: round,
+		        currentUserOwnsRound: currentUserOwnsRound,
+		        message: message
 	      	});
 	      } else {
 	      	console.log('No such user, round, or invalid round');
@@ -427,12 +458,19 @@ app.get('/dashboard', function(req, res) {
 			//       display the number of users or the names of users 
 			//       who have placed in this round, possibly with 
 			//       their ranking, like a mini-leaderboard 
-			res.render('pages/dashboard', {
-				my_title: 'FindIt!',
-				message: {
+
+			// define a message if one was passed to us
+			let message = {};
+			if(req.query.message && req.query.messageLevel) {
+				message = {
 					content: req.query.message,
 					level: req.query.messageLevel
-				},
+				}
+			}
+
+			res.render('pages/dashboard', {
+				my_title: 'FindIt!',
+				message: message,
 				loggedIn: loggedIn,
 				roundsets: utils.groupBySetsOfN(results, 4)
 			});

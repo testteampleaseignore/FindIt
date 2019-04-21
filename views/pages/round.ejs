@@ -1,7 +1,14 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>      
 
-<h2 class="title"><%= name %>'s Round</h2>
+<h2 class="title">
+  <% if(currentUserOwnsRound) { %>
+    Your
+  <% } else { %>
+    <%= round.starter_name %>'s 
+  <% } %> 
+  Round
+</h2>
 
 <div class="hidden-container">
   <div class="debugging" <% if(!debugging) { %> style="display: none" <% } %> >
@@ -32,19 +39,28 @@
   <div id="map-canvas"></div>
 </div>
 
+<!-- Load map & related resources in this order, specifically.
+     It's the fastest way to get them all loaded without errors. -->
 <script src="../resources/js/map.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=<%= keys.googlemaps %>&callback=initialize"></script>
 <script src="../resources/js/geolocation.js"></script>
 <script>
   function handleLocationUpdate(lat, lng) {
 
+      /* This callback to getLocation receives 
+         lat & lng as parameters -- the newest
+         geolocation result, taken together. */
+
       // update hidden guessTarget form
       document.getElementById('lat').value = lat;
       document.getElementById('lng').value = lng;
 
       // make the "I'm here" button show up
-      document.getElementsByClassName('button')[0].style = "display: block;";
-      console.log('ready!');
+      // if the user doesn't own this round
+      if(<%= !currentUserOwnsRound %>) {
+        document.getElementsByClassName('button')[0].style = "display: block;";
+        console.log('ready to guess!');
+      }
 
       // display the current lat / long as debugging info
       document.getElementById('your-lat').innerHTML = lat;
@@ -57,13 +73,11 @@
         document.getElementById('target-lng').innerHTML, 
         lat, lng);
       document.getElementById('distance').innerHTML = 
-        `distance in feet: ${calculatedDistance * 5280}`;
+        `distance in feet: ${calculatedDistance}`;
 
       redraw(lat, lng);
       console.log('redrew map');
   }
-</script>
-<script>
   window.addEventListener('DOMContentLoaded', function() {
     getLocation(handleLocationUpdate);
     setInterval(function(){

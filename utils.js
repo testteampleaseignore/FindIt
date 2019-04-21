@@ -70,12 +70,4 @@ module.exports = {
         dist = dist * 60 * 1.1515;
         return dist * 5280;
     },
-    congratulations: function(place, round) {
-    	return (`You were right! You placed ${place}${inflector.ordinal(place)} ` +
-    		    `for round ${round.id}. Nice job!`); 
-    },
-    sorry: function(round) {
-    	return `Sorry! You haven't actually found the target of round ${round.id} yet. ` +
-    	       'Keep searching!';
-    }
 };

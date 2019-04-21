@@ -51,6 +51,8 @@
     previewFile();
 </script>
 
+<!-- Load map & related resources in this order, specifically.
+     It's the fastest way to get them all loaded without errors. -->
 <script src="../resources/js/map.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=<%= keys.googlemaps %>&callback=initialize"></script>
 <script src="../resources/js/geolocation.js"></script>
