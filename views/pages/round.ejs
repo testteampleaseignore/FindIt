@@ -23,10 +23,7 @@
   <img src='../uploads/<%=round.target_url%>'>
 </div>
 <div class="container button-container">
-  <button class="button" 
-        onclick="alert('Check location against the picture location and do stuff')">
-        Found It!
-  </button>
+  <button class="button" style="display: none;">Found It!</button>
 </div>
 
 <div class="container map-container">
@@ -56,7 +53,11 @@
         // update hidden guessTarget form
         document.getElementById('lat').innerHTML = window.lat;
         document.getElementById('lng').innerHTML = window.lng;
-        
+
+        // make the "I'm here" button show up
+        document.getElementsByClassName('button')[0].style = "display: block;";
+        console.log('ready!');
+
         // display the current lat / long as debugging info
         document.getElementById('your-lat').innerHTML = window.lat;
         document.getElementById('your-lng').innerHTML = window.lng;
