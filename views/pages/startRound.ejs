@@ -6,6 +6,12 @@
 <h1>Create New Round</h1>
 <br>
 
+<div class="hidden-container">
+  <div class="debugging" <% if(!debugging) { %> style="display: none" <% } %>>
+    <p id="your-lat"></p>
+    <p id="your-lng"></p>
+  </div>
+</div>
 <form action="/uploadTarget" enctype="multipart/form-data" method="POST" onsubmit="updateFormLocation()"> 
    <input type="file" accept="image/*" capture name="myFile" onchange="previewFile()"/>
    <img src="" height="200" alt="Image preview...">
@@ -17,9 +23,9 @@
 <div class="container">
       <h1>Current Location</h1>
       <div id="map-canvas"></div>
-    </div>
+</div>
 
-    <script>
+<script>
     window.lat = 40.0150;
     window.lng= -105.2705;
 

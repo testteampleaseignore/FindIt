@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const filenamify = require('filenamify');
 const uniqueFilename = require('unique-filename');
+const inflector = require('inflected');
+
 
 module.exports = {
 
@@ -51,5 +53,29 @@ module.exports = {
 		} else {
 			return false;
 		}
-	}
-}
+	},
+	distance: function (lat1, lon1, lat2, lon2) {
+		/* Get distance in feet between two 
+		   sets of GPS coordinates. */
+        var radlat1 = Math.PI * lat1/180;
+        var radlat2 = Math.PI * lat2/180;
+        var theta = lon1-lon2;
+        var radtheta = Math.PI * theta/180;
+        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+        if (dist > 1) {
+          dist = 1;
+        }
+        dist = Math.acos(dist);
+        dist = dist * 180/Math.PI;
+        dist = dist * 60 * 1.1515;
+        return dist * 5280;
+    },
+    congratulations: function(place, round) {
+    	return (`You were right! You placed ${place}${inflector.ordinal(place)} ` +
+    		    `for round ${round.id}. Nice job!`); 
+    },
+    sorry: function(round) {
+    	return `Sorry! You haven't actually found the target of round ${round.id} yet. ` +
+    	       'Keep searching!';
+    }
+};

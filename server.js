@@ -53,7 +53,7 @@ app.use(session({
 // NOTE: database needs to exist at this point, maybe?
 app.use(busboy({immediate: true }));
 
-// One way we could handle score upload logic
+// One way we could handle score update logic
 var PLACEMENTS_TO_POINTS = {
 	1: 10,
 	2: 5,
@@ -61,6 +61,8 @@ var PLACEMENTS_TO_POINTS = {
 	4: 2,
 	5: 1	
 }
+// Distance is in feet
+var DISTANCE_TO_FIND = 45;
 
 
 app.get('/', function(req, res) {
@@ -244,30 +246,40 @@ app.post('/guessTargetLocation', function(req, res) {
 	if(loggedIn) {
 		var form = {}
 
+			console.log('retrived guess: ');
 			req.busboy.on('field', function(key, value) {
 				form[key] = value;
-				console.log(key);
+				console.log(value);
 			});
 			req.busboy.on('finish', function() {
 				if(form.lat && form.lng && form.round_id) {
-					console.log(form.round_id);
-					db.one('SELECT target_latitude, target_longitude' + 
-						   `FROM rounds WHERE id=${form.round_id};`)
-						.then(function(results) {
-							let distanceInMiles = utils.distance(
-								results[0].target_latitude,
-								results[0].target_longitude,
-								form.lat, form.lng, 'M'
-							)
-							if((distanceInMiles / 5280) < 30) {
+					round_stmt = 'SELECT id, target_latitude, target_longitude ' + 
+						   		 `FROM rounds WHERE id=${form.round_id};`;
+					console.log(`query: ${round_stmt}`);
+					db.one(round_stmt)
+						.then(function(round) {
+							console.log('Actual coordinates:')
+							console.log(round);
+							console.log('Guessed coordinates: ')
+							console.log(form);
+							let distanceInFeet = utils.distance(
+								round.target_latitude,
+								round.target_longitude,
+								form.lat, form.lng
+							);
+							console.log('Distance between the two: ')
+							console.log(distanceInFeet);
+							if(distanceInFeet < DISTANCE_TO_FIND) {
 								let place = 1;
-								res.render(
-									`/dashboard?message=${utils.congratulations(place)}` +
-									'&level=success');
+								res.redirect(
+									('/dashboard?message=' + 
+									 encodeURIComponent(utils.congratulations(place, round)) +
+									 '&messageLevel=success'));
 							} else {
-								res.render(
-									`/rounds/${form.round_id}?message=${utils.sorry()}` +
-									'$level=primary')
+								res.redirect(
+									`/rounds/${form.round_id}?message=` +
+										encodeURIComponent(utils.sorry(round)) +
+									'&messageLevel=primary')
 							}
 						})
 						.catch(function(results) {
@@ -333,24 +345,30 @@ app.get('/rounds/:roundId', function(req, res) {
 	
 	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedIn) {
-		var round_stmt =  "SELECT * FROM rounds " + 
+		var round_stmt =  "SELECT rounds.id as round_id, user_name as starter_name, " +
+						  "rounds.target_latitude, rounds.target_longitude, rounds.target_url FROM rounds " + 
 						  "JOIN users on rounds.starter_id=users.id " + 
 						  "WHERE rounds.id=" + req.params.roundId + ';';
 		db.one(round_stmt)
 		.then(round_user => {
+		  console.log(round_user);
 	      if(round_user && utils.roundHasLocalTarget(round_user)) {
 	      	res.render('pages/round', {
 		      	my_title: "Round #" + req.params.roundId,
-		        round: round_user,
 		        loggedIn: true,
-		        name: round_user.user_name,
 		        debugging: req.query.debugging,
                 keys: {
 				    googlemaps: process.env.GOOGLE_MAPS_API_KEY,
 				    pn_sub: process.env.PN_SUB_KEY, 
 				    pn_pub: process.env.PN_PUB_KEY
-                }
-	      	})
+                },
+		        round: round_user,
+		        name: round_user.starter_name,
+		        message: {
+		        	content: req.query.message,
+		        	level: req.query.messageLevel
+		        }
+	      	});
 	      } else {
 	      	console.log('No such user, round, or invalid round');
 	      	console.log(results);
@@ -373,10 +391,13 @@ app.get('/dashboard', function(req, res) {
 			// Don't display rounds for which the targets are "stale",
 			// i.e. their file does not exist in the filesystem 
 			results = results.filter(utils.roundHasLocalTarget);
-			
+
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
-				message: req.query.message,
+				message: {
+					content: req.query.message,
+					level: req.query.messageLevel
+				},
 				loggedIn: loggedIn,
 				roundsets: utils.groupBySetsOfN(results, 4)
 			});

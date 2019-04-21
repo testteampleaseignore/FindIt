@@ -44,4 +44,19 @@
     <% } %>
   </div>
 </div>
+<% if(typeof loggedOutBanner !== 'undefined') { %>
+<header class="w3-container w3-red w3-center">
+  <h1 class="w3-margin w3-jumbo">FIND IT</h1>
+</header>
+<% } %>
 <div id="content">
+  <div id="messages">
+    <% if(typeof loggedOutBanner !== 'undefined') { %> 
+      <div class="alert alert-<%= message.level %>" role="alert">
+        <%= message.content %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> 
+    <% } %>
+  </div>

@@ -1,20 +1,8 @@
 <% include ../partials/header %>
+<% var loggedOutBanner = true; %>
 <% include ../partials/menu %>			
 
 
-<% if(!loggedIn) { %> 
-<header class="w3-container w3-red w3-center">
-  <h1 class="w3-margin w3-jumbo">FIND IT</h1>
-</header>
-<% } %>
-
-<div id="messages">
-	<% if(message) { %> 
-		<div class="alert alert-<%= level %>" role="alert">
-		  <%= message %>
-		</div> 
-	<% } %>
-</div>
 
 <% if(roundsets.length > 0) { %>
 	<h2 class="title">Rounds</h2>

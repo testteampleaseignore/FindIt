@@ -1,8 +1,6 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>      
 
-<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.19.0.min.js"></script>
-
 <h2 class="title"><%= name %>'s Round</h2>
 
 <div class="hidden-container">
@@ -13,141 +11,65 @@
     <p id="your-lng"></p>
     <p id="distance"></p>
   </div>
-  <form id="guessTarget" action="/guessTargetLocation" 
-        method="POST" enctype="multipart/formdata">
-    <input id="lat" type="hidden"></p>
-    <input id="lng" type="hidden"></p>
+  <form id="guessLocation" enctype="multipart/form-data" 
+        method="POST" action="/guessTargetLocation" >
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lng" id="lng">
+    <input type="hidden" name="round_id" id="round_id" value='<%= round.round_id %>'>
   </form>
 </div>
 <div class="container image-container">
   <img src='../uploads/<%=round.target_url%>'>
 </div>
 <div class="container button-container">
-  <button class="button" style="display: none;">Found It!</button>
-  <form id="guessLocation" enctype="multipart/form-data" 
-        method="POST" action="/guessTargetLocation" >
-    <input type="hidden" name="lat" id="lat" value='<%= round.target_latitude %>'>
-    <input type="hidden" name="lng" id="lng" value='<%= round.target_longitude %>'>
-    <input type="hidden" name="round_id" id="round_id" value='<%= round.id %>'>
-  </form>
-  <img src='../uploads/<%=round.target_url%>'>
-</div>
-<div class="container button-container">
-  <button class="button" 
-        onclick="$('form#guessLocation').submit()">
-        Found It!
-  </button>
+  <button class="button" style="display: none;"
+          onclick="$('form#guessLocation').submit()">
+      Found It!</button>
 </div>
 
 <div class="container map-container">
-      <h1>Current Location</h1>
-      <div id="map-canvas"></div>
-    </div>
+  <h1>Current Location</h1>
+  <div id="map-canvas"></div>
+</div>
 
-    <script>
-    window.lat = 40.0150;
-    window.lng= -105.2705;
-
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(updatePosition);
-        }
-      
-        return null;
-    };
-
-    function updatePosition(position) {
-      if (position) {
-
-        // update globals holding current coords
-        window.lat = position.coords.latitude;
-        window.lng = position.coords.longitude;
-
-        // update hidden guessTarget form
-        document.getElementById('lat').innerHTML = window.lat;
-        document.getElementById('lng').innerHTML = window.lng;
-
-        // make the "I'm here" button show up
-        document.getElementsByClassName('button')[0].style = "display: block;";
-        console.log('ready!');
-
-        // display the current lat / long as debugging info
-        document.getElementById('your-lat').innerHTML = window.lat;
-        document.getElementById('your-lng').innerHTML = window.lng;
-        
-        // calculate & display the distance from the 
-        // current location to the target (in debugging)
-        let calculatedDistance = distance(
-          document.getElementById('target-lat').innerHTML, 
-          document.getElementById('target-lng').innerHTML, 
-          window.lat, window.lng);
-        document.getElementById('distance').innerHTML = 
-          `distance in feet: ${calculatedDistance * 5280}`;
-
-      }
-    }
-    
-    updatePosition(getLocation());
-    setInterval(function(){updatePosition(getLocation());}, 1500);
-      
-    function currentLocation() {
-      return {lat:window.lat, lng:window.lng};
-    };
-
-    var map;
-    var mark;
-
-    var initialize = function() {
-      map  = new google.maps.Map(document.getElementById('map-canvas'), {center:{lat:lat,lng:lng},zoom:17});
-      mark = new google.maps.Marker({position:{lat:lat, lng:lng}, map:map});
-    };
-
-    window.initialize = initialize;
-
-    var redraw = function(payload) {
-      lat = payload.message.lat;
-      lng = payload.message.lng;
-
-      map.setCenter({lat:lat, lng:lng, alt:0});
-      mark.setPosition({lat:lat, lng:lng, alt:0});
-    };
-
-    var pnChannel = "map2-channel";
-
-    var pubnub = new PubNub({
-      publishKey:   '<%= keys.pn_pub %>',
-      subscribeKey: '<%= keys.pn_sub %>'
-    });
-
-    pubnub.subscribe({channels: [pnChannel]});
-    pubnub.addListener({message:redraw});
-
-    setInterval(function() {
-      pubnub.publish({channel:pnChannel, message:currentLocation()});
-    }, 5000);
-        
-    function distance(lat1, lon1, lat2, lon2) {
-      if ((lat1 == lat2) && (lon1 == lon2)) {
-        return 0;
-      }
-      else {
-        var radlat1 = Math.PI * lat1/180;
-        var radlat2 = Math.PI * lat2/180;
-        var theta = lon1-lon2;
-        var radtheta = Math.PI * theta/180;
-        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-        if (dist > 1) {
-          dist = 1;
-        }
-        dist = Math.acos(dist);
-        dist = dist * 180/Math.PI;
-        dist = dist * 60 * 1.1515;
-        return dist;
-      }
-    }
-</script>
-
+<script src="../resources/js/map.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=<%= keys.googlemaps %>&callback=initialize"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="../resources/js/geolocation.js"></script>
+<script>
+  function handleLocationUpdate(lat, lng) {
+
+      // update hidden guessTarget form
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+
+      // make the "I'm here" button show up
+      document.getElementsByClassName('button')[0].style = "display: block;";
+      console.log('ready!');
+
+      // display the current lat / long as debugging info
+      document.getElementById('your-lat').innerHTML = lat;
+      document.getElementById('your-lng').innerHTML = lng;
+      
+      // calculate & display the distance from the 
+      // current location to the target (in debugging)
+      let calculatedDistance = distance(
+        document.getElementById('target-lat').innerHTML, 
+        document.getElementById('target-lng').innerHTML, 
+        lat, lng);
+      document.getElementById('distance').innerHTML = 
+        `distance in feet: ${calculatedDistance * 5280}`;
+
+      redraw(lat, lng);
+      console.log('redrew map');
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    getLocation(handleLocationUpdate);
+    setInterval(function(){
+      getLocation(handleLocationUpdate);
+    }, 1500);
+  });
+</script>
 
 <% include ../partials/footer %>
