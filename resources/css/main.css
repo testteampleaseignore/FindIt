@@ -35,54 +35,16 @@ header.w3-container {
 .row-roundset {
   margin-top: 2em;
 }
-
-@media(min-width: 650px) {
-  .rows {
-    margin-left: 5em;  
-  }
-  .round-link {
-    width: 22%;
-  }
-  .round-model.card {
-    margin: 2em 2em 0 0;
-  }
-  .round-model.card.fake {
-    width: 19.8%;
-  }
-}
-
-@media(max-width: 649px) {
-  .round-link {
-    width: 100%;
-  }
-  .round-model.card {
-    margin: 2em 3em 0 3em;
-  }
-  .round-model.card.fake {
-    display: none;
-  }
-}
-
 .round-model.card {
-  text-align: center;
+  margin-bottom: 2em;
 }
-.round-model.card.fake {
-  height: 180px;
-  background-color: #eee;
-  border: none;
-}
-
 .round-model.card img {
-  height: 180px;
-  max-width: 100%;
-}
-
-.container {
-  padding: 16px;
+  max-height: calc(25vw + 140px);
+  text-align: center;
 }
 
 .w3-container {
-  padding:128px 16px  
+  padding: 128px 16px;
 }
 
 

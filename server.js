@@ -325,20 +325,25 @@ app.get('/rounds/:roundId', function(req, res) {
 app.get('/dashboard', function(req, res) {
 	var target_url = "SELECT target_url, id FROM rounds ORDER BY id DESC;";
 	var loggedIn = utils.isLoggedIn(req);
-	db.any(target_url)
+	db.many(target_url)
 		.then(function(results){
 
 			// Don't display rounds for which the targets are "stale",
 			// i.e. their file does not exist in the filesystem 
 			results = results.filter(utils.roundHasLocalTarget);
+			results.forEach(function(result) {
 
-			// Pad out the dashboard with some "fake" 
-			// rounds to make it look slightly nicer
-			if(results.length > 0) {
-				while(results.length < 8) {
-					results.push({fake: true});
+				// Set the number of columns each round 
+				// based on a bootstrap 12-column grid 
+				if(results.length < 4) {
+					result.cols = 1 / results.length * 12;
+				} else {
+					// For 4 or more rounds, allot
+					// one of the total 4-column view
+					result.cols = 3;
 				}
-			}
+			});
+			
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
 				loggedIn: loggedIn,
