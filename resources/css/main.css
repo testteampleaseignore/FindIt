@@ -75,8 +75,11 @@ header.w3-container {
     text-align: center;
 }
 
+/* Round + Start Round pages */
+
 #map-canvas {
     margin: auto;
+    height: 400px;
 }
 
 /* Register */
