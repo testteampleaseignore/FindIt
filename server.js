@@ -100,6 +100,18 @@ function handleCorrectGuess(round, user_id, callback) {
 	// 2. add (user_id, round_id, placement_number) to 
 	//   round_placements table
 	// 3. pass placement_number into callback
+    
+    //for now just give everyone 10 if they find it
+    var add_points = 'UPDATE users SET points = points+10 WHERE id = ' + user_id + ';';
+    db.none(add_points)
+    	.then(function(result) {
+				console.log('updated points');
+			})
+			.catch(function(result) {
+			    console.log(result);
+    });
+              
+    
 	let place = 1;
 	callback(place); 
 }
@@ -210,8 +222,8 @@ app.post('/register', function(req, res)
 	});
 	req.busboy.on('finish', function() {
 		var password_hash = bcrypt.hashSync(form.password, 10);
-		var insert_user = 'INSERT INTO users (user_name, email, password_hash) ' +
-		                      `VALUES ('${form.username}', '${form.email}', '${password_hash}') ` +
+		var insert_user = 'INSERT INTO users (user_name, email, password_hash, points) ' +
+		                      `VALUES ('${form.username}', '${form.email}', '${password_hash}', '${0}') ` +
 		                      'RETURNING id;' 
 		db.oneOrNone(insert_user)
 		  .then(function(result) {
