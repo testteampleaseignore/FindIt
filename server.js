@@ -239,6 +239,48 @@ app.get('/startRound', function(req, res) {
 	}
 });
 
+app.post('/guessTargetLocation', function(req, res) {
+	var loggedIn = utils.ensureLoggedInOrRedirect(req, res);
+	if(loggedIn) {
+		var form = {}
+
+			req.busboy.on('field', function(key, value) {
+				form[key] = value;
+				console.log(key);
+			});
+			req.busboy.on('finish', function() {
+				if(form.lat && form.lng && form.round_id) {
+					console.log(form.round_id);
+					db.one('SELECT target_latitude, target_longitude' + 
+						   `FROM rounds WHERE id=${form.round_id};`)
+						.then(function(results) {
+							let distanceInMiles = utils.distance(
+								results[0].target_latitude,
+								results[0].target_longitude,
+								form.lat, form.lng, 'M'
+							)
+							if((distanceInMiles / 5280) < 30) {
+								let place = 1;
+								res.render(
+									`/dashboard?message=${utils.congratulations(place)}` +
+									'&level=success');
+							} else {
+								res.render(
+									`/rounds/${form.round_id}?message=${utils.sorry()}` +
+									'$level=primary')
+							}
+						})
+						.catch(function(results) {
+							console.log(results);
+						});
+				} else {
+					console.log("didn't pass something we needed to /guessTargetLocation");
+					res.redirect('/dashboard');
+				}
+			})
+		}
+});
+
 app.post('/uploadTarget', function(req, res) {
 
 	loggedIn = utils.ensureLoggedInOrRedirect(req, res);
@@ -334,6 +376,7 @@ app.get('/dashboard', function(req, res) {
 			
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
+				message: req.query.message,
 				loggedIn: loggedIn,
 				roundsets: utils.groupBySetsOfN(results, 4)
 			});

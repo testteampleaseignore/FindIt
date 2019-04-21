@@ -24,6 +24,19 @@
 </div>
 <div class="container button-container">
   <button class="button" style="display: none;">Found It!</button>
+  <form id="guessLocation" enctype="multipart/form-data" 
+        method="POST" action="/guessTargetLocation" >
+    <input type="hidden" name="lat" id="lat" value='<%= round.target_latitude %>'>
+    <input type="hidden" name="lng" id="lng" value='<%= round.target_longitude %>'>
+    <input type="hidden" name="round_id" id="round_id" value='<%= round.id %>'>
+  </form>
+  <img src='../uploads/<%=round.target_url%>'>
+</div>
+<div class="container button-container">
+  <button class="button" 
+        onclick="$('form#guessLocation').submit()">
+        Found It!
+  </button>
 </div>
 
 <div class="container map-container">

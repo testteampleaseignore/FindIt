@@ -8,6 +8,14 @@
 </header>
 <% } %>
 
+<div id="messages">
+	<% if(message) { %> 
+		<div class="alert alert-<%= level %>" role="alert">
+		  <%= message %>
+		</div> 
+	<% } %>
+</div>
+
 <% if(roundsets.length > 0) { %>
 	<h2 class="title">Rounds</h2>
 	<div class="rows container">
