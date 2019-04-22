@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS round_placements (
     PRIMARY KEY (round_id, placement_number)
 );
 
+alter table round_placements drop constraint round_placements_pkey;
+
 CREATE TABLE "session" (
   "sid" varchar NOT NULL COLLATE "default",
   "sess" json NOT NULL,
