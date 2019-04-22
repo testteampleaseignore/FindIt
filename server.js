@@ -101,6 +101,11 @@ function handleCorrectGuess(round, user_id, callback) {
 	//   round_placements table
 	// 3. pass placement_number into callback
     
+    //calculate placement
+    var place = 0;
+    place: () => db.one("SELECT count(*) FROM round_placements")
+            .then(data => parseInt(data.count))
+    
     //for now just give everyone 10 if they find it
     var add_points = 'UPDATE users SET points = points+10 WHERE id = ' + user_id + ';';
     db.none(add_points)
@@ -110,10 +115,20 @@ function handleCorrectGuess(round, user_id, callback) {
 			.catch(function(result) {
 			    console.log(result);
     });
-              
     
-	let place = 1;
-	callback(place); 
+    //add a placement entry to round_placements table
+    var add_placement = 'INSERT INTO round_placements (placement_number, round_id, user_id) ' +
+		                      `VALUES ('${place}', '${round.id}', '${user_id}') ` +
+		                      ';';
+    db.none(add_placement)
+        .then(function(result) {
+				console.log('added placement');
+			})
+			.catch(function(result) {
+			    console.log(result);
+    });
+
+	callback(place+1); 
 }
 
 function handleIncorrectGuess(round, user_id, callback) {
