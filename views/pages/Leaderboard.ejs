@@ -11,12 +11,8 @@
      <th>Score</th>
     
   </tr>
-  data.forEach(function(element)
-   {
-  		<td> </td>
-  		<td>element.user_name </td>
-  		<td> </td>
-	});
-
-</table>
- <% include ../partials/footer %>
+  var i = 0;
+  while(<%=data[i] != NULL%>)
+  {
+  	<td><%=data[i].user_name%></td>
+  }
