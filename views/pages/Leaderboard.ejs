@@ -11,8 +11,17 @@
      <th>Score</th>
     
   </tr>
-  var i = 0;
-  while(<%=data[i] != NULL%>)
-  {
-  	<td><%=data[i].user_name%></td>
-  }
+  <% var i = 0;%>
+  
+<%while(typeof data[i] !== 'undefined')
+  { %>
+  
+    <tr>
+     <td><%=data[i].row_number%></td>
+      <td><%=data[i].user_name%></td>
+      <td><%=data[i].points%></td>
+    </tr>
+    
+    <%i = i+1;%>
+ <% }%>
+ </table>
