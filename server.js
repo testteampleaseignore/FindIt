@@ -55,12 +55,13 @@ app.use(session({
 app.use(busboy({immediate: true }));
 
 // One way we could handle score update logic
+// let 0 represent 1st and 1 represent 2nd...
 var PLACEMENTS_TO_POINTS = {
-	1: 10,
-	2: 5,
-	3: 3,
-	4: 2,
-	5: 1	
+	0: 10,
+	1: 5,
+	2: 3,
+	3: 2,
+	4: 1	
 }
 
 // This is how close you have to be 
@@ -103,8 +104,12 @@ function handleCorrectGuess(round, user_id, callback) {
     
     //calculate placement
     var place = 0;
-    place: () => db.one("SELECT count(*) FROM round_placements")
-            .then(data => parseInt(data.count))
+    
+    db.one('SELECT count(*) FROM round_placements WHERE round_id = ' + round.id, [], c => +c.count)
+        .then(count => {
+        // count = a proper integer value, rather than an object with a string
+        place = count;
+    });
     
     //for now just give everyone 10 if they find it
     var add_points = 'UPDATE users SET points = points+10 WHERE id = ' + user_id + ';';
