@@ -61,7 +61,13 @@ var PLACEMENTS_TO_POINTS = {
 	1: 5,
 	2: 3,
 	3: 2,
-	4: 1	
+	4: 1,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10:0
 }
 
 // This is how close you have to be 
@@ -109,18 +115,19 @@ function handleCorrectGuess(round, user_id, callback) {
         .then(count => {
         // count = a proper integer value, rather than an object with a string
         place = count;
-        place = place+1;
-        callback(place);
-    });
-    
-    //for now just give everyone 10 if they find it
-    var add_points = 'UPDATE users SET points = points+10 WHERE id = ' + user_id + ';';
-    db.none(add_points)
-    	.then(function(result) {
+        callback(place+1);
+        
+        //console.log('Place: ' + place);
+        //console.log('Points: ' + PLACEMENTS_TO_POINTS[place]);
+        
+        var add_points = 'UPDATE users SET points = points+' + PLACEMENTS_TO_POINTS[place] + 'WHERE id = ' + user_id + ';';
+        db.none(add_points)
+    	   .then(function(result) {
 				console.log('updated points');
 			})
 			.catch(function(result) {
 			    console.log(result);
+        });
     });
     
     //add a placement entry to round_placements table
