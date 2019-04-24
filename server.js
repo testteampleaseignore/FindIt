@@ -109,6 +109,8 @@ function handleCorrectGuess(round, user_id, callback) {
         .then(count => {
         // count = a proper integer value, rather than an object with a string
         place = count;
+        place = place+1;
+        callback(place);
     });
     
     //for now just give everyone 10 if they find it
@@ -132,8 +134,9 @@ function handleCorrectGuess(round, user_id, callback) {
 			.catch(function(result) {
 			    console.log(result);
     });
-
-	callback(place+1); 
+    
+    //place = place+1;
+	//callback(place);
 }
 
 function handleIncorrectGuess(round, user_id, callback) {
