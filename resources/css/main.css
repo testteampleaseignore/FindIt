@@ -44,8 +44,19 @@ header.w3-container {
 }
 .round-model.card {
   margin-bottom: 2em;
-  height: 300px;
 }
+@media(min-width: 1201px) {
+  .round-model.card {
+    height: 300px;
+  }
+}
+@media(max-width: 600px) {
+  .round-model.card {
+    height: 120px;
+    width: 230px;
+  }
+}
+
 .round-model.card img {
   object-fit: contain;
   object-position: 50% 50%;
