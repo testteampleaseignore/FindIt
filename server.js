@@ -55,12 +55,13 @@ app.use(session({
 app.use(busboy({immediate: true }));
 
 // One way we could handle score update logic
+// let 0 represent 1st and 1 represent 2nd...
 var PLACEMENTS_TO_POINTS = {
-	1: 10,
-	2: 5,
-	3: 3,
-	4: 2,
-	5: 1	
+	0: 10,
+	1: 5,
+	2: 3,
+	3: 2,
+	4: 1	
 }
 
 // This is how close you have to be 
@@ -100,8 +101,42 @@ function handleCorrectGuess(round, user_id, callback) {
 	// 2. add (user_id, round_id, placement_number) to 
 	//   round_placements table
 	// 3. pass placement_number into callback
-	let place = 1;
-	callback(place); 
+    
+    //calculate placement
+    var place = 0;
+    
+    db.one('SELECT count(*) FROM round_placements WHERE round_id = ' + round.id, [], c => +c.count)
+        .then(count => {
+        // count = a proper integer value, rather than an object with a string
+        place = count;
+        place = place+1;
+        callback(place);
+    });
+    
+    //for now just give everyone 10 if they find it
+    var add_points = 'UPDATE users SET points = points+10 WHERE id = ' + user_id + ';';
+    db.none(add_points)
+    	.then(function(result) {
+				console.log('updated points');
+			})
+			.catch(function(result) {
+			    console.log(result);
+    });
+    
+    //add a placement entry to round_placements table
+    var add_placement = 'INSERT INTO round_placements (placement_number, round_id, user_id) ' +
+		                      `VALUES ('${place}', '${round.id}', '${user_id}') ` +
+		                      ';';
+    db.none(add_placement)
+        .then(function(result) {
+				console.log('added placement');
+			})
+			.catch(function(result) {
+			    console.log(result);
+    });
+    
+    //place = place+1;
+	//callback(place);
 }
 
 function handleIncorrectGuess(round, user_id, callback) {
@@ -210,8 +245,8 @@ app.post('/register', function(req, res)
 	});
 	req.busboy.on('finish', function() {
 		var password_hash = bcrypt.hashSync(form.password, 10);
-		var insert_user = 'INSERT INTO users (user_name, email, password_hash) ' +
-		                      `VALUES ('${form.username}', '${form.email}', '${password_hash}') ` +
+		var insert_user = 'INSERT INTO users (user_name, email, password_hash, points) ' +
+		                      `VALUES ('${form.username}', '${form.email}', '${password_hash}', '${0}') ` +
 		                      'RETURNING id;' 
 		db.oneOrNone(insert_user)
 		  .then(function(result) {
