@@ -502,7 +502,7 @@ app.get('/dashboard', function(req, res) {
 
 			res.render('pages/dashboard', {
 				my_title: 'FindIt!',
-				message: message,
+			        message: message,
 				loggedIn: loggedIn,
 				roundsets: utils.groupBySetsOfN(results, 4)
 			});
