@@ -274,9 +274,11 @@ app.post('/register', function(req, res)
 app.get('/profile', function (req, res) {
 	var loggedin = utils.ensureLoggedInOrRedirect(req, res);
 	if(loggedin) {
-		var query = 'SELECT user_name, points, ROW_NUMBER() OVER(ORDER BY points DESC)'+
-		' FROM users WHERE id='+ req.session.userID +';';
-		//var query1 = 'SELECT points FROM users WHERE id='+ req.session.userID +';';
+		var query = 'SELECT * FROM ( ' +
+		                'SELECT id as user_id, user_name, points, ROW_NUMBER() ' +
+		                'OVER(ORDER BY points DESC) FROM USERS ' +
+                    ') as leaderboard ' + 
+		            'WHERE leaderboard.user_id=' + req.session.userID + ';';
 		db.any(query)
 		/*db.task('get-everything', task => {
 	    	return task.batch([
