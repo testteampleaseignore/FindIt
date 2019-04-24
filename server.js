@@ -163,6 +163,10 @@ function handleIncorrectGuess(round, user_id, callback) {
 	// 1. increment attempts 
 	// (or add a row to round_attempts,
 	// whichever works and is easier)
+    
+    //Not currently using this function
+    //We currently allow unlimited attempts
+    
 	callback()
 }
 
