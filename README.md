@@ -8,10 +8,16 @@ Where we store the code for FindIt!
 - Enter the database with `\c findit` (or whatever you called it).
 - Paste the contents of [db-create.sql](https://github.com/testteampleaseignore/FindIt/blob/master/db-create.sql) into your pgSQL terminal.
 
+#### Code to create the database is provided in the file db-create.sql
+
 #### NodeJS stuff
 
 - Run `npm install` inside the project directory (after you clone it). This should install all requirements as stored in package.json
 - You can execute `npm run watch` at the terminal, from this project directory, to both (1) serve / run the project, and  (2) automatically update the server when changes are made. This is just a handy way to develop the app without restarting the server over and over. 
+
+#### How to run the app locally
+- Run 'node server.js' inside the project directory.
+- The url for the website is 'http://localhost:3000/'
 
 #### General
 
@@ -29,12 +35,12 @@ database credentials as specified by DATABASE_URL if necessary.
 + [x] Register Page
 + [x] Upload Target Page
 + [x] Target / Location persistence
-+ [p] Checking a target location
-+ [p] Make round placement-to-score logic
-+ [p] Current Round Display (on Home page)
-+ [p] Player stats Profile
-+ [ ] Transition to new round logic
-+ [ ] Reporting a picture
++ [x] Checking a target location
++ [x] Make round placement-to-score logic
++ [x] Current Round Display (on Home page)
++ [x] Player stats Profile
++ [x] Transition to new round logic
++ [x] Reporting a picture
 
 ### Proposed Database Schema
 
@@ -85,5 +91,25 @@ If the round_placements table looked like this...
 To get some testing data right away to start hacking,
 run `psql -U <username> <dbname> < testing-db.sql`,
 taking care to replace username and dbname appropriately.
+
+## Project Structure
+
+#### Page Templates
+- All of the page templates are located in the views/pages folder. 
+- Embedded javascript and w3schools was used to design these pages.
+- The style for the pages was done in .css files. These can be viewed in the folder resources/css.
+
+#### The partials folder
+- Contains reused code.
+    - The header, the footer, and the menu were used for multiple pages.
+
+#### Server.js
+- All of the get and post requests are done in server.js.
+- The login information is also encrypted in this file.
+
+#### Uploads Folder
+- This contains a .keep file that ensures that files are uploaded an kept during a game.
+
+
 
 
