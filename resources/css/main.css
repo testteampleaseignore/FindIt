@@ -20,6 +20,10 @@ h2.title {
   margin-top: 2em;
 }
 
+.close {
+  width: 10%;
+}
+
 
 /* Dashboard */
 
@@ -32,15 +36,32 @@ header.w3-container {
   text-align: center;
 }
 
+.rows {
+  max-width: 1000px;
+}
 .row-roundset {
   margin-top: 2em;
 }
 .round-model.card {
   margin-bottom: 2em;
 }
+@media(min-width: 1201px) {
+  .round-model.card {
+    height: 300px;
+  }
+}
+@media(max-width: 600px) {
+  .round-model.card {
+    height: 120px;
+    width: 230px;
+  }
+}
+
 .round-model.card img {
-  max-height: calc(16vw + 120px);
+  object-fit: contain;
+  object-position: 50% 50%;
   text-align: center;
+  max-height: calc(16vw + 60px);
 }
 
 .w3-container {
