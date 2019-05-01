@@ -20,7 +20,7 @@ Where we store the code for FindIt!
 - The url for the website is 'http://localhost:3000/'
 
 #### How to test the code
-- Run 'npx cypress open' in your project directory
+- Run 'npx cypress open' in your project directory.
 - Then choose the test case you wish to run.
 
 #### General
@@ -112,7 +112,7 @@ taking care to replace username and dbname appropriately.
 - The login information is also encrypted in this file.
 
 #### Uploads Folder
-- This contains a .keep file that ensures that files are uploaded an kept during a game.
+- This contains a .keep file that ensures that files are uploaded and kept during a game.
 
 
 
