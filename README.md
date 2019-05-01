@@ -111,10 +111,15 @@ taking care to replace username and dbname appropriately.
 - All of the get and post requests are done in server.js.
 - The login information is also encrypted in this file.
 
+#### Resources
+- Along with CSS already mentioned in this folder, we also have additional JavaScript files, & favicon images. There are some more javascript utilities in messages.js and utils.js.
+
 #### Uploads Folder
 - This contains a .keep file that ensures that files are uploaded and kept during a game.
 
-
+#### Tests
+- These are all found under cypress/integration
+- These tests test the production application as we have currently configured things, which is not ideal because stateful features can't really be tested properly; ideally, we would test with our development server on localhost. 
 
 
 
