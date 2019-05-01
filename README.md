@@ -1,6 +1,7 @@
 Where we store the code for FindIt!
+
 ### testteampleaseignore
-- Our group is Test Team Please Ignore and you can view our documentation of our process at https://github.com/testteampleaseignore . From there our Milestones and Meeting notes are available for your viewing.
+- Our group is Test Team Please Ignore and you can view our documentation of our process at https://github.com/testteampleaseignore. From there our Milestones and Meeting notes are available for your viewing.
 
 ### Getting Setup
 
