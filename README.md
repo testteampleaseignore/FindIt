@@ -19,6 +19,10 @@ Where we store the code for FindIt!
 - Run 'node server.js' inside the project directory.
 - The url for the website is 'http://localhost:3000/'
 
+#### How to test the code
+- Run 'npx cypress open' in your project directory
+- Then choose the test case you wish to run.
+
 #### General
 
 Initialize an environment variable config:
@@ -109,6 +113,7 @@ taking care to replace username and dbname appropriately.
 
 #### Uploads Folder
 - This contains a .keep file that ensures that files are uploaded an kept during a game.
+
 
 
 
